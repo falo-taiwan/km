@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FALO Source Inbox Frontend</title>
+    <style>
+      :root {
+        --bg: #f5f1e8;
+        --panel: #fffdf8;
+        --line: #d9cfbc;
+        --ink: #2f261a;
+        --soft: #74624a;
+        --accent: #b45f2b;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        background: linear-gradient(180deg, #f8f4eb 0%, #efe5d4 100%);
+        color: var(--ink);
+      }
+
+      .shell {
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      .card {
+        max-width: 920px;
+        margin: 0 auto;
+        background: rgba(255, 253, 248, 0.96);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 14px 40px rgba(78, 51, 16, 0.08);
+      }
+
+      code {
+        padding: 2px 6px;
+        border-radius: 8px;
+        background: #f1e6d3;
+      }
+
+      h1, h2 {
+        margin-top: 0;
+      }
+
+      ul {
+        line-height: 1.7;
+      }
+
+      .muted {
+        color: var(--soft);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="card">
+        <h1>FALO Source Inbox Frontend</h1>
+        <p class="muted">
+          This HTML file is now treated as an external frontend artifact. It is not deployed inside GAS.
+        </p>
+
+        <h2>Current role</h2>
+        <ul>
+          <li>Acts as the portable frontend source file.</li>
+          <li>Can later be hosted from local files, GitHub Pages, or another static environment.</li>
+          <li>Should call the GAS backend through HTTP API instead of <code>google.script.run</code>.</li>
+        </ul>
+
+        <h2>Current backend expectation</h2>
+        <ul>
+          <li>Backend endpoint is the deployed GAS web app URL.</li>
+          <li>Requests should use JSON payloads shaped like <code>{ action, params }</code>.</li>
+          <li>Google Sheet and Drive remain the runtime data layer.</li>
+        </ul>
+
+        <h2>Next build step</h2>
+        <p>
+          Once the GAS backend is deployed, this file can be expanded into a real external frontend that performs
+          login, source CRUD, attachment linking, and send-to-self actions through fetch-based API calls.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
