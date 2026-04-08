@@ -1,0 +1,585 @@
+<!-- Last Updated: 2026-04-08 20:05:55 Asia/Taipei -->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FALO Source Inbox V1 展示版</title>
+    <style>
+      :root {
+        --bg: #f3ecdf;
+        --paper: #fffdf8;
+        --line: #d8ccb6;
+        --ink: #2c2419;
+        --soft: #6e614e;
+        --accent: #a5542a;
+        --accent-soft: #efe2d0;
+        --ok: #2d7440;
+        --note: #785b2f;
+      }
+
+      * { box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        font-family: "Avenir Next", "Noto Sans TC", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(201, 170, 123, 0.18), transparent 28%),
+          linear-gradient(180deg, #f7f1e6 0%, #ede2cf 100%);
+      }
+
+      a { color: var(--accent); }
+
+      .page {
+        width: min(1100px, calc(100% - 32px));
+        margin: 28px auto 64px;
+      }
+
+      .hero,
+      .section,
+      .system-card {
+        background: rgba(255, 253, 248, 0.96);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: 0 16px 48px rgba(95, 68, 28, 0.08);
+      }
+
+      .hero {
+        padding: 28px;
+        margin-bottom: 18px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      h1 {
+        margin: 16px 0 10px;
+        font-size: clamp(34px, 6vw, 58px);
+        line-height: 1.05;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--soft);
+        line-height: 1.8;
+        font-size: 18px;
+        max-width: 780px;
+      }
+
+      .nav {
+        position: sticky;
+        top: 12px;
+        z-index: 10;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 18px;
+        padding: 14px;
+        background: rgba(255, 250, 243, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        backdrop-filter: blur(10px);
+      }
+
+      .nav a {
+        text-decoration: none;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: white;
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      .layout {
+        display: grid;
+        gap: 18px;
+      }
+
+      .section {
+        padding: 24px;
+      }
+
+      .section h2 {
+        margin: 0 0 12px;
+        font-size: 30px;
+      }
+
+      .section p,
+      .section li {
+        line-height: 1.8;
+      }
+
+      .muted { color: var(--soft); }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .tile {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: #fffaf2;
+      }
+
+      .tile h3 {
+        margin: 0 0 10px;
+        font-size: 20px;
+      }
+
+      .flow {
+        display: grid;
+        gap: 12px;
+      }
+
+      .flow-step {
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: #fffaf3;
+      }
+
+      .flow-step strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .system-shell {
+        display: grid;
+        gap: 16px;
+      }
+
+      .system-card {
+        padding: 20px;
+      }
+
+      .system-card h3 {
+        margin-top: 0;
+        font-size: 24px;
+      }
+
+      .source-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .source-row {
+        display: grid;
+        gap: 8px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: #fffcf6;
+      }
+
+      .source-row strong {
+        font-size: 18px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #f3eadb;
+        color: var(--soft);
+        border: 1px solid var(--line);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .meta-list,
+      .attachment-list {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .callout {
+        padding: 16px 18px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: #fbf5ea;
+      }
+
+      .callout.ok {
+        background: #eef8f1;
+        color: var(--ok);
+      }
+
+      .callout.note {
+        background: #fff6e7;
+        color: var(--note);
+      }
+
+      .play-card {
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: #fffdf8;
+      }
+
+      .play-card h3 {
+        margin: 0 0 10px;
+      }
+
+      .play-card dl {
+        margin: 0;
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 8px 12px;
+      }
+
+      .play-card dt {
+        font-weight: 700;
+        color: var(--soft);
+      }
+
+      .play-card dd {
+        margin: 0;
+      }
+
+      @media (max-width: 860px) {
+        .grid.two,
+        .grid.three {
+          grid-template-columns: 1fr;
+        }
+
+        .play-card dl {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero" id="top">
+        <span class="eyebrow">FALO 展示版 / Single-file HTML</span>
+        <h1>FALO Source Inbox V1</h1>
+        <p>
+          這不是 runtime 系統頁，而是一份可本機直接開啟、可用於教學、可用於 clean-room 重建的展示檔。
+          它把目前 V1 已經跑通的能力，整理成一個完整世界觀：<strong>系統說明</strong>、
+          <strong>資料流</strong>、<strong>功能畫面</strong>、<strong>Play-SOP 候選</strong>。
+        </p>
+      </header>
+
+      <nav class="nav">
+        <a href="#overview">說明</a>
+        <a href="#architecture">架構</a>
+        <a href="#flow">資料流</a>
+        <a href="#system">系統</a>
+        <a href="#playsop">Play-SOP</a>
+      </nav>
+
+      <main class="layout">
+        <section class="section" id="overview">
+          <h2>1. 系統說明</h2>
+          <p>
+            FALO Source Inbox V1 的核心不是 AI，也不是完整 KM。它先解一個更基礎的問題：
+            <strong>把來源收進來，保留原始參照，手動管狀態，必要時再送回自己。</strong>
+          </p>
+          <div class="grid two">
+            <div class="tile">
+              <h3>這一版是什麼</h3>
+              <ul>
+                <li>Source Inbox</li>
+                <li>狀態管理系統</li>
+                <li>Google-first 的 V1 平台</li>
+                <li>可教、可理解、可重建的系統底座</li>
+              </ul>
+            </div>
+            <div class="tile">
+              <h3>這一版不是什麼</h3>
+              <ul>
+                <li>不是完整 KM</li>
+                <li>不是 AI workflow engine</li>
+                <li>不是 relation / container 系統</li>
+                <li>不是 Telegram bot</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout note" style="margin-top: 16px;">
+            <strong>核心原則：</strong> Google-first、HTML-first、Force GAS 開發法、人工控制 status、
+            文件優先描述系統行為與資料流，而不是只描述程式細節。
+          </div>
+        </section>
+
+        <section class="section" id="architecture">
+          <h2>2. 整體架構</h2>
+          <div class="grid three">
+            <div class="tile">
+              <h3>Capture</h3>
+              <p class="muted">入口層</p>
+              <p>使用者從外部前端建立 source，之後再補 note、clean text、reference。</p>
+            </div>
+            <div class="tile">
+              <h3>Core</h3>
+              <p class="muted">資料與索引層</p>
+              <p>
+                Google Sheet 承接 `source`、`attachment`、`activity_log`、`user_account`、`app_config`。
+              </p>
+            </div>
+            <div class="tile">
+              <h3>Execution</h3>
+              <p class="muted">行動輸出層</p>
+              <p>Gmail 寄送、Drive 附件鏈接、外部 frontend 深連結，都屬於行動層的一部分。</p>
+            </div>
+          </div>
+
+          <div class="grid two" style="margin-top: 16px;">
+            <div class="tile">
+              <h3>平台分工</h3>
+              <ul>
+                <li><strong>Excel：</strong> schema 藍本</li>
+                <li><strong>Google Sheet：</strong> 雲端執行資料庫</li>
+                <li><strong>GAS：</strong> 後端邏輯與 API</li>
+                <li><strong>HTML：</strong> 外部前端與展示語言</li>
+                <li><strong>Drive：</strong> 原始附件層</li>
+              </ul>
+            </div>
+            <div class="tile">
+              <h3>V1 主體物件</h3>
+              <ul>
+                <li><strong>source：</strong> 一筆被收進來的來源單位</li>
+                <li><strong>attachment：</strong> 指向 Drive 的檔案關聯</li>
+                <li><strong>activity_log：</strong> 可擴展的行為紀錄</li>
+                <li><strong>user_account：</strong> 輕量登入控管</li>
+                <li><strong>app_config：</strong> 系統設定與前端基底網址</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="flow">
+          <h2>3. 資料流</h2>
+          <div class="flow">
+            <div class="flow-step">
+              <strong>Flow A｜Create Source</strong>
+              外部前端送出一筆最小資料，GAS 驗證登入、必填欄位與 dedupe hint，最後寫入 `source` 與 `activity_log`。
+            </div>
+            <div class="flow-step">
+              <strong>Flow B｜Attach Drive File</strong>
+              使用者提供 Drive URL 或 file ID，GAS 驗證來源存在、檔案可讀，寫入 `attachment` 與對應 log。
+            </div>
+            <div class="flow-step">
+              <strong>Flow C｜Manual Status</strong>
+              使用者手動把狀態從 `inbox` 改到 `processing`、`done` 或 `archived`，系統不自動流轉。
+            </div>
+            <div class="flow-step">
+              <strong>Flow D｜Send to Self</strong>
+              使用者觸發寄給自己，GAS 組合 source 內容、附件連結與前端網址，寄出 email 並留下 `email_sent` 紀錄。
+            </div>
+            <div class="flow-step">
+              <strong>Flow E｜Open from Email</strong>
+              使用者點開 email 深連結，進入外部 frontend，帶著 `source_id` 回頭向 GAS 讀取 detail。
+            </div>
+          </div>
+          <div class="callout ok" style="margin-top: 16px;">
+            目前已實際驗證成功的完整鏈路是：<strong>Google Sheet / Drive → GAS backend → Email 深連結 → 外部 frontend → Source detail</strong>。
+          </div>
+        </section>
+
+        <section class="section" id="system">
+          <h2>4. 系統畫面（System View）</h2>
+          <p class="muted">
+            這一區不是實際 runtime，而是把目前 V1 已跑通的能力，用「可教學的靜態展示」方式重新表達。
+          </p>
+
+          <div class="system-shell">
+            <div class="system-card">
+              <h3>Source List</h3>
+              <div class="source-list">
+                <div class="source-row">
+                  <strong>測試來源 02</strong>
+                  <div class="chips">
+                    <span class="chip">status: inbox</span>
+                    <span class="chip">type: note</span>
+                    <span class="chip">ref: manual-test-02</span>
+                  </div>
+                  <div class="muted">這是第二筆手動測試資料，已成功掛上一個 Drive 附件，並已寄送至 Gmail。</div>
+                </div>
+                <div class="source-row">
+                  <strong>測試來源 01</strong>
+                  <div class="chips">
+                    <span class="chip">status: inbox</span>
+                    <span class="chip">type: note</span>
+                    <span class="chip">duplicate-aware</span>
+                  </div>
+                  <div class="muted">這筆資料曾被 duplicate 檢查攔下，證明 dedupe 機制已經生效。</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="system-card" id="source">
+              <h3>Source Detail</h3>
+              <h4 style="font-size: 32px; margin: 0 0 10px;">測試來源 02</h4>
+              <ul class="meta-list">
+                <li><strong>Status：</strong> inbox</li>
+                <li><strong>Type：</strong> note</li>
+                <li><strong>Reference：</strong> manual-test-02</li>
+                <li><strong>Created At：</strong> 2026-04-08 18:32:13（展示版建議用台灣時間閱讀）</li>
+                <li><strong>Updated At：</strong> 2026-04-08 18:32:13</li>
+              </ul>
+
+              <div class="grid two" style="margin-top: 16px;">
+                <div class="tile">
+                  <h3>Note</h3>
+                  <p>這是第二筆手動測試資料</p>
+                </div>
+                <div class="tile">
+                  <h3>Clean Text</h3>
+                  <p>這是第二筆 clean text 測試內容</p>
+                </div>
+              </div>
+
+              <div class="grid two" style="margin-top: 16px;">
+                <div class="tile">
+                  <h3>Attachments</h3>
+                  <ul class="attachment-list">
+                    <li>Kimi_Agent_AI回覆概念總結.zip</li>
+                  </ul>
+                </div>
+                <div class="tile">
+                  <h3>Actions</h3>
+                  <ul>
+                    <li>手動更新 status</li>
+                    <li>掛接 Google Drive 檔案</li>
+                    <li>寄給自己</li>
+                    <li>從 email 深連結重新打開</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="system-card">
+              <h3>Status 操作</h3>
+              <div class="chips">
+                <span class="chip">inbox</span>
+                <span class="chip">processing</span>
+                <span class="chip">done</span>
+                <span class="chip">archived</span>
+              </div>
+              <p class="muted" style="margin-top: 12px;">
+                V1 的 status 是流程主幹，但一律由人工控制。系統不自動判斷、不自動流轉、不由 AI 覆寫。
+              </p>
+            </div>
+
+            <div class="system-card">
+              <h3>Send to Self</h3>
+              <p>
+                當使用者需要重新回看或把來源轉成下一步行動時，可以觸發寄給自己。email 內容包含：
+              </p>
+              <ul>
+                <li>source title</li>
+                <li>status</li>
+                <li>reference</li>
+                <li>note / clean text</li>
+                <li>attachment 連結</li>
+                <li>Open in FALO Frontend 深連結</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="playsop">
+          <h2>5. Play-SOP 候選</h2>
+          <p>
+            這裡的 Play-SOP 不是 function，也不是 module。它描述的是：
+            <strong>一段可被執行、可被理解、可被重建的能力單元。</strong>
+          </p>
+
+          <div class="grid">
+            <div class="play-card">
+              <h3>create_source</h3>
+              <dl>
+                <dt>行為</dt><dd>建立一筆 source</dd>
+                <dt>流程</dt><dd>輸入最小欄位 → 驗證 → dedupe hint → 寫入 source 與 activity_log</dd>
+                <dt>系統位置</dt><dd>Capture + Core</dd>
+                <dt>資料</dt><dd>`source`, `activity_log`</dd>
+                <dt>工具</dt><dd>HTML, GAS, Google Sheet</dd>
+                <dt>V1 對應</dt><dd>`save_source` API 與 source create flow</dd>
+                <dt>設計意圖</dt><dd>先收進來、之後再整理，避免資料遺失或分散</dd>
+              </dl>
+            </div>
+
+            <div class="play-card">
+              <h3>attach_file</h3>
+              <dl>
+                <dt>行為</dt><dd>把 Drive 檔案掛到既有 source</dd>
+                <dt>流程</dt><dd>提供 Drive URL / file ID → 驗證檔案 → 寫入 attachment 與 log</dd>
+                <dt>系統位置</dt><dd>Core + Execution</dd>
+                <dt>資料</dt><dd>`attachment`, `activity_log`, `source_id`</dd>
+                <dt>工具</dt><dd>HTML, GAS, Google Drive, Google Sheet</dd>
+                <dt>V1 對應</dt><dd>`add_attachment` API</dd>
+                <dt>設計意圖</dt><dd>保留原始資產，不把原始檔內容硬塞進 source 主表</dd>
+              </dl>
+            </div>
+
+            <div class="play-card">
+              <h3>update_status</h3>
+              <dl>
+                <dt>行為</dt><dd>人工改變 source lifecycle</dd>
+                <dt>流程</dt><dd>選擇下一個 status → 驗證合法值 → 更新 source → 寫入 log</dd>
+                <dt>系統位置</dt><dd>Core</dd>
+                <dt>資料</dt><dd>`source.status`, `activity_log`</dd>
+                <dt>工具</dt><dd>HTML, GAS, Google Sheet</dd>
+                <dt>V1 對應</dt><dd>`update_source_status` API</dd>
+                <dt>設計意圖</dt><dd>讓 status 成為流程骨架，但保留人機協作的判斷權</dd>
+              </dl>
+            </div>
+
+            <div class="play-card">
+              <h3>send_to_self</h3>
+              <dl>
+                <dt>行為</dt><dd>把一筆 source 送回自己</dd>
+                <dt>流程</dt><dd>取得 source detail → 組合 email → 寄出 → 寫入 email_sent log</dd>
+                <dt>系統位置</dt><dd>Execution</dd>
+                <dt>資料</dt><dd>`source`, `attachment`, `activity_log`, `user_account`</dd>
+                <dt>工具</dt><dd>GAS, Gmail, Google Sheet, Drive</dd>
+                <dt>V1 對應</dt><dd>`send_source_to_self` API</dd>
+                <dt>設計意圖</dt><dd>讓系統不只收資料，還能把資料推回行動現場</dd>
+              </dl>
+            </div>
+
+            <div class="play-card">
+              <h3>open_source_from_email</h3>
+              <dl>
+                <dt>行為</dt><dd>從 email 深連結重新打開 source</dd>
+                <dt>流程</dt><dd>點開前端連結 → 讀取 `source_id` → 呼叫 GAS detail API → 顯示來源內容</dd>
+                <dt>系統位置</dt><dd>Execution + Frontend</dd>
+                <dt>資料</dt><dd>`app_config.FRONTEND_BASE_URL`, `source`, `attachment`</dd>
+                <dt>工具</dt><dd>HTML, GAS, Gmail</dd>
+                <dt>V1 對應</dt><dd>外部 `index.html` + `get_source_detail` API</dd>
+                <dt>設計意圖</dt><dd>把 email 從終點變成入口，形成可回流的知識操作鏈</dd>
+              </dl>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

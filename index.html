@@ -1,1157 +1,129 @@
-<!-- Last Updated: 2026-04-08 20:44:37 Asia/Taipei -->
+<!-- Last Updated: 2026-04-08 20:05:55 Asia/Taipei -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FALO Source Inbox</title>
+    <title>FALO v1.01 Version Hub</title>
     <style>
       :root {
-        --bg: #f5f1e8;
-        --panel: #fffdf8;
-        --line: #d9cfbc;
-        --ink: #2f261a;
-        --soft: #74624a;
-        --accent: #b45f2b;
-        --accent-dark: #8c4418;
-        --ok: #2f7a43;
-        --warn: #9b5b00;
-        --error: #a33a2a;
-        --tag: #f4ead8;
+        --bg: #f4edde;
+        --card: #fffdf8;
+        --line: #d9ccb5;
+        --ink: #2c2418;
+        --soft: #6b5f4d;
+        --accent: #a8562d;
       }
 
       * { box-sizing: border-box; }
 
       body {
         margin: 0;
-        font-family: "Avenir Next", "Segoe UI", sans-serif;
-        background: linear-gradient(180deg, #f8f4eb 0%, #efe5d4 100%);
+        font-family: "Avenir Next", "Noto Sans TC", sans-serif;
         color: var(--ink);
+        background: linear-gradient(180deg, #f8f3ea 0%, #eee2cf 100%);
       }
 
-      a {
-        color: var(--accent-dark);
-      }
-
-      .shell {
-        min-height: 100vh;
-        padding: 24px;
+      .page {
+        width: min(960px, calc(100% - 32px));
+        margin: 32px auto 64px;
       }
 
       .card {
-        max-width: 1100px;
-        margin: 0 auto;
         background: rgba(255, 253, 248, 0.97);
         border: 1px solid var(--line);
         border-radius: 24px;
-        padding: 24px;
-        box-shadow: 0 14px 40px rgba(78, 51, 16, 0.08);
+        padding: 26px;
+        box-shadow: 0 16px 44px rgba(90, 64, 27, 0.08);
       }
 
-      .hero {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        align-items: flex-start;
-        margin-bottom: 24px;
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(32px, 6vw, 52px);
       }
 
-      .hero h1 {
-        margin: 0 0 8px;
-        font-size: 40px;
-      }
-
-      .hero p {
-        margin: 0;
+      p {
+        line-height: 1.8;
         color: var(--soft);
-        line-height: 1.7;
-        max-width: 760px;
-      }
-
-      .chip {
-        display: inline-flex;
-        align-items: center;
-        border-radius: 999px;
-        padding: 6px 12px;
-        border: 1px solid var(--line);
-        background: #fbf5ea;
-        color: var(--soft);
-        font-size: 14px;
-        white-space: nowrap;
-      }
-
-      .stack {
-        display: grid;
-        gap: 20px;
-      }
-
-      .panel {
-        border: 1px solid var(--line);
-        border-radius: 20px;
-        background: #fffdf8;
-        padding: 20px;
-      }
-
-      .panel h2 {
-        margin-top: 0;
-        margin-bottom: 12px;
-        font-size: 24px;
       }
 
       .grid {
         display: grid;
         gap: 16px;
-      }
-
-      .grid.two {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 20px;
       }
 
-      .layout {
-        display: grid;
-        gap: 20px;
-        grid-template-columns: 1.1fr 0.9fr;
-      }
-
-      .field {
-        display: grid;
-        gap: 6px;
-      }
-
-      .field label {
-        font-weight: 600;
-      }
-
-      .field input,
-      .field textarea,
-      .field select {
-        width: 100%;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 14px;
-        font: inherit;
-        background: #fffcf5;
-      }
-
-      .field textarea {
-        min-height: 140px;
-        resize: vertical;
-      }
-
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
-      }
-
-      button {
-        border: 0;
-        border-radius: 14px;
-        padding: 12px 16px;
-        font: inherit;
-        font-weight: 700;
-        cursor: pointer;
-      }
-
-      .primary {
-        background: var(--accent);
-        color: white;
-      }
-
-      .secondary {
-        background: #efe4d1;
-        color: var(--ink);
-      }
-
-      .ghost {
-        background: transparent;
-        border: 1px solid var(--line);
-        color: var(--soft);
-      }
-
-      .status-box {
-        border-radius: 16px;
-        padding: 14px 16px;
-        line-height: 1.6;
-        border: 1px solid var(--line);
-        background: #faf5eb;
-        color: var(--soft);
-      }
-
-      .status-box.ok {
-        border-color: #b9d8c2;
-        background: #eef8f1;
-        color: var(--ok);
-      }
-
-      .status-box.warn {
-        border-color: #e4c58e;
-        background: #fff6e9;
-        color: var(--warn);
-      }
-
-      .status-box.error {
-        border-color: #e5b4ac;
-        background: #fff0ed;
-        color: var(--error);
-      }
-
-      .hint {
-        color: var(--soft);
-        font-size: 14px;
-        line-height: 1.6;
-      }
-
-      .hidden {
-        display: none !important;
-      }
-
-      .tag-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-
-      .tag-button {
-        padding: 8px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: var(--tag);
-        color: var(--soft);
-        font-size: 13px;
-        font-weight: 700;
-      }
-
-      .tag-button.active {
-        background: var(--accent);
-        color: white;
-        border-color: var(--accent);
-      }
-
-      .meta-list,
-      .attachment-list {
-        margin: 0;
-        padding-left: 18px;
-        line-height: 1.8;
-      }
-
-      .meta-list strong {
-        display: inline-block;
-        min-width: 104px;
-      }
-
-      .source-title {
-        font-size: 34px;
-        margin: 0 0 12px;
-      }
-
-      .source-text {
-        white-space: pre-wrap;
-        line-height: 1.8;
-        color: var(--ink);
-      }
-
-      .muted {
-        color: var(--soft);
-      }
-
-      code {
-        padding: 2px 6px;
-        border-radius: 8px;
-        background: #f1e6d3;
-      }
-
-      .list-wrap {
-        display: grid;
-        gap: 12px;
-      }
-
-      .source-list {
-        display: grid;
-        gap: 10px;
-      }
-
-      .source-item {
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 14px;
-        background: #fffcf6;
-        cursor: pointer;
-      }
-
-      .source-item:hover {
-        border-color: var(--accent);
-      }
-
-      .source-item strong {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 18px;
-      }
-
-      .source-item .mini {
-        color: var(--soft);
-        font-size: 14px;
-      }
-
-      .empty {
-        border: 1px dashed var(--line);
-        border-radius: 16px;
+      .tile {
         padding: 18px;
-        color: var(--soft);
+        border-radius: 18px;
+        border: 1px solid var(--line);
         background: #fffaf2;
       }
 
-      .toolbar {
-        display: grid;
-        gap: 12px;
-        grid-template-columns: 1.5fr 1fr auto;
+      .tile h2 {
+        margin: 0 0 10px;
       }
 
-      @media (max-width: 920px) {
-        .layout {
-          grid-template-columns: 1fr;
-        }
+      .tile a {
+        color: var(--accent);
+        font-weight: 700;
+        text-decoration: none;
       }
 
-      @media (max-width: 720px) {
-        .shell {
-          padding: 16px;
-        }
+      .meta {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: #f7efe1;
+        border: 1px solid var(--line);
+      }
 
-        .card {
-          padding: 18px;
-        }
-
-        .hero {
-          flex-direction: column;
-        }
-
-        .hero h1 {
-          font-size: 30px;
-        }
-
-        .grid.two,
-        .toolbar {
+      @media (max-width: 760px) {
+        .grid {
           grid-template-columns: 1fr;
         }
       }
     </style>
   </head>
   <body>
-    <div class="shell">
+    <div class="page">
       <div class="card">
-        <div class="hero">
-          <div>
-            <h1 id="appTitle">FALO Source Inbox</h1>
-            <p>
-              這是 V2 第一版 Shell。目標不是把所有功能一次做完，而是先把高頻場景做順：
-              <strong>快速 Capture、快速切換 type、快速建立、快速回看。</strong>
-            </p>
+        <h1>FALO Source Inbox v1.01</h1>
+        <p>
+          這個頁面是 v1.01 的版本落地入口。它把同一個系統版本的四種表達方式集中在一起，
+          方便直接點閱、展示、教學與版本對照。
+        </p>
+
+        <div class="grid">
+          <div class="tile">
+            <h2>A｜實際版</h2>
+            <p>看這一版實際系統由哪些元件構成。</p>
+            <a href="./falo-source-inbox-v1.01-A-system.md">開啟 A-system</a>
           </div>
-          <div class="chip" id="backendChip">Backend 未檢查</div>
+          <div class="tile">
+            <h2>B｜POC 版</h2>
+            <p>看系統的可理解版本，偏展示與快速理解。</p>
+            <a href="./falo-source-inbox-v1.01-B-poc-showcase.html">開啟 B-poc-showcase</a>
+          </div>
+          <div class="tile">
+            <h2>C｜教學版</h2>
+            <p>看可教、可重建的文字化版本與 Play-SOP 脈絡。</p>
+            <a href="./falo-source-inbox-v1.01-C-teaching.md">開啟 C-teaching</a>
+          </div>
+          <div class="tile">
+            <h2>D｜呈現版</h2>
+            <p>看適合 NotebookLM、簡報與視覺化轉換的版本。</p>
+            <a href="./falo-source-inbox-v1.01-D-presentation.md">開啟 D-presentation</a>
+          </div>
         </div>
 
-        <div class="stack">
-          <section class="panel">
-            <h2>1. Backend 設定</h2>
-            <div class="grid">
-              <div class="field">
-                <label for="backendUrl">GAS Backend URL</label>
-                <input id="backendUrl" type="url">
-              </div>
-              <div class="actions">
-                <button class="secondary" id="saveBackendButton" type="button">儲存 Backend URL</button>
-                <button class="ghost" id="checkBackendButton" type="button">檢查 Backend</button>
-              </div>
-              <div class="status-box" id="backendStatus">
-                先填入 GAS Web App 的 <code>/exec</code> 網址，再檢查後端是否可用。
-              </div>
-            </div>
-          </section>
-
-          <section class="panel" id="loginPanel">
-            <h2>2. 登入</h2>
-            <div class="grid two">
-              <div class="field">
-                <label for="username">帳號</label>
-                <input id="username" type="text" value="admin">
-              </div>
-              <div class="field">
-                <label for="password">密碼</label>
-                <input id="password" type="password" value="123">
-              </div>
-            </div>
-            <div class="actions" style="margin-top: 16px;">
-              <button class="primary" id="loginButton" type="button">登入並建立 session</button>
-            </div>
-            <div class="status-box" id="loginStatus">
-              前端會把 token 存在這台瀏覽器，之後才能建立 source、查 source、打開 detail。
-            </div>
-          </section>
-
-          <section class="panel hidden" id="sessionPanel">
-            <h2>3. 目前 session</h2>
-            <p class="muted" id="sessionSummary">尚未登入。</p>
-            <div class="actions">
-              <button class="secondary" id="reloadListButton" type="button">重新載入 Source List</button>
-              <button class="ghost" id="reloadSourceButton" type="button">重新載入目前 Source</button>
-              <button class="ghost" id="logoutButton" type="button">清除本機 session</button>
-            </div>
-          </section>
-
-          <div class="layout">
-            <section class="panel">
-              <h2>4. Quick Capture</h2>
-              <div class="field">
-                <label for="captureInput">主輸入</label>
-                <textarea id="captureInput" placeholder="貼網址、打一段 note、貼上一段文字都可以。"></textarea>
-                <div class="hint">
-                  入口先盡量少欄位。這一區只負責先收進來，系統先判斷，之後再補。
-                </div>
-              </div>
-
-              <div class="grid two">
-                <div class="field">
-                  <label for="attachmentInput">Drive 檔案（可選）</label>
-                  <input id="attachmentInput" type="text" placeholder="貼上 Google Drive file URL 或 file ID">
-                </div>
-                <div class="field">
-                  <label for="noteInput">補充說明（可選）</label>
-                  <input id="noteInput" type="text" placeholder="補一句你自己看得懂的說明">
-                </div>
-              </div>
-
-              <div class="grid" style="margin-top: 16px;">
-                <div>
-                  <strong>系統預設判斷</strong>
-                  <div class="hint" id="detectHint">尚未輸入內容，暫時無法判斷 type。</div>
-                </div>
-                <div class="tag-row" id="typeSwitchRow"></div>
-                <div class="hint">
-                  原則不是「少選擇」，而是「有預設，且可快速切換」。
-                </div>
-              </div>
-
-              <div class="actions" style="margin-top: 18px;">
-                <button class="primary" id="createSourceButton" type="button">建立 Source</button>
-                <button class="ghost" id="clearCaptureButton" type="button">清空輸入</button>
-              </div>
-
-              <div class="status-box" id="captureStatus" style="margin-top: 16px;">
-                目標是 3 秒內能建立一筆，而且不需要先思考分類。
-              </div>
-            </section>
-
-            <section class="panel">
-              <h2>5. Source List</h2>
-              <div class="toolbar">
-                <input id="listKeyword" type="text" placeholder="搜尋 title / ref / note / clean text">
-                <select id="listStatusFilter"></select>
-                <button class="secondary" id="applyFilterButton" type="button">查詢</button>
-              </div>
-              <div class="list-wrap" style="margin-top: 16px;">
-                <div class="status-box" id="listStatus">登入後會自動載入 source list。</div>
-                <div class="source-list" id="sourceList"></div>
-              </div>
-            </section>
-          </div>
-
-          <section class="panel">
-            <h2>6. Source 深連結狀態</h2>
-            <div class="status-box" id="sourceStatus">
-              尚未偵測到 `source_id`。若是從 email 連進來，網址應該長得像：
-              <code>?source_id=...</code>
-            </div>
-          </section>
-
-          <section class="panel hidden" id="sourcePanel">
-            <h2>7. Source 詳情</h2>
-            <h3 class="source-title" id="sourceTitle">Source Title</h3>
-            <ul class="meta-list">
-              <li><strong>Status</strong><span id="sourceStatusValue"></span></li>
-              <li><strong>Type</strong><span id="sourceTypeValue"></span></li>
-              <li><strong>Reference</strong><span id="sourceRefValue"></span></li>
-              <li><strong>Created At</strong><span id="sourceCreatedAt"></span></li>
-              <li><strong>Updated At</strong><span id="sourceUpdatedAt"></span></li>
-            </ul>
-
-            <div class="grid" style="margin-top: 18px;">
-              <div>
-                <h3>Status 快速切換</h3>
-                <div class="tag-row" id="statusSwitchRow"></div>
-              </div>
-              <div>
-                <h3>Note</h3>
-                <div class="source-text" id="sourceNote"></div>
-              </div>
-              <div>
-                <h3>Clean Text</h3>
-                <div class="source-text" id="sourceCleanText"></div>
-              </div>
-              <div>
-                <h3>Attachments</h3>
-                <ul class="attachment-list" id="attachmentList"></ul>
-              </div>
-            </div>
-          </section>
+        <div class="meta">
+          Force Cheng × FALO<br>
+          Version: v1.01<br>
+          Date: 2026-04-08
         </div>
       </div>
     </div>
-
-    <script>
-      const DEFAULT_BACKEND_URL =
-        'https://script.google.com/macros/s/AKfycbzQsUBvdMbFmod3_IvEBeN1BsbWvk9yodeWzpLF_L82PxDg8oMvRMOBg8kZPaHnYlMF/exec';
-      const STORAGE_KEYS = {
-        backendUrl: 'falo_backend_url',
-        token: 'falo_token',
-        user: 'falo_user'
-      };
-
-      const state = {
-        bootstrap: {
-          appTitle: 'FALO Source Inbox',
-          statuses: ['inbox', 'processing', 'done', 'archived'],
-          sourceTypes: ['url', 'note', 'document', 'idea', 'other']
-        },
-        selectedType: 'note',
-        detectedType: 'note',
-        currentSourceId: '',
-        currentSource: null,
-        list: []
-      };
-
-      const elements = {
-        appTitle: document.getElementById('appTitle'),
-        backendChip: document.getElementById('backendChip'),
-        backendUrl: document.getElementById('backendUrl'),
-        saveBackendButton: document.getElementById('saveBackendButton'),
-        checkBackendButton: document.getElementById('checkBackendButton'),
-        backendStatus: document.getElementById('backendStatus'),
-        loginPanel: document.getElementById('loginPanel'),
-        username: document.getElementById('username'),
-        password: document.getElementById('password'),
-        loginButton: document.getElementById('loginButton'),
-        loginStatus: document.getElementById('loginStatus'),
-        sessionPanel: document.getElementById('sessionPanel'),
-        sessionSummary: document.getElementById('sessionSummary'),
-        reloadListButton: document.getElementById('reloadListButton'),
-        reloadSourceButton: document.getElementById('reloadSourceButton'),
-        logoutButton: document.getElementById('logoutButton'),
-        captureInput: document.getElementById('captureInput'),
-        attachmentInput: document.getElementById('attachmentInput'),
-        noteInput: document.getElementById('noteInput'),
-        detectHint: document.getElementById('detectHint'),
-        typeSwitchRow: document.getElementById('typeSwitchRow'),
-        createSourceButton: document.getElementById('createSourceButton'),
-        clearCaptureButton: document.getElementById('clearCaptureButton'),
-        captureStatus: document.getElementById('captureStatus'),
-        listKeyword: document.getElementById('listKeyword'),
-        listStatusFilter: document.getElementById('listStatusFilter'),
-        applyFilterButton: document.getElementById('applyFilterButton'),
-        listStatus: document.getElementById('listStatus'),
-        sourceList: document.getElementById('sourceList'),
-        sourceStatus: document.getElementById('sourceStatus'),
-        sourcePanel: document.getElementById('sourcePanel'),
-        sourceTitle: document.getElementById('sourceTitle'),
-        sourceStatusValue: document.getElementById('sourceStatusValue'),
-        sourceTypeValue: document.getElementById('sourceTypeValue'),
-        sourceRefValue: document.getElementById('sourceRefValue'),
-        sourceCreatedAt: document.getElementById('sourceCreatedAt'),
-        sourceUpdatedAt: document.getElementById('sourceUpdatedAt'),
-        sourceNote: document.getElementById('sourceNote'),
-        sourceCleanText: document.getElementById('sourceCleanText'),
-        attachmentList: document.getElementById('attachmentList'),
-        statusSwitchRow: document.getElementById('statusSwitchRow')
-      };
-
-      function setStatusBox(element, kind, message) {
-        element.className = 'status-box' + (kind ? ' ' + kind : '');
-        element.innerHTML = message;
-      }
-
-      function getBackendUrl() {
-        return localStorage.getItem(STORAGE_KEYS.backendUrl) || DEFAULT_BACKEND_URL;
-      }
-
-      function setBackendUrl(url) {
-        localStorage.setItem(STORAGE_KEYS.backendUrl, url);
-      }
-
-      function getToken() {
-        return localStorage.getItem(STORAGE_KEYS.token) || '';
-      }
-
-      function setSession(token, user) {
-        localStorage.setItem(STORAGE_KEYS.token, token);
-        localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
-      }
-
-      function clearSession() {
-        localStorage.removeItem(STORAGE_KEYS.token);
-        localStorage.removeItem(STORAGE_KEYS.user);
-      }
-
-      function getUser() {
-        try {
-          return JSON.parse(localStorage.getItem(STORAGE_KEYS.user) || 'null');
-        } catch (error) {
-          return null;
-        }
-      }
-
-      function getSourceIdFromUrl() {
-        return new URLSearchParams(window.location.search).get('source_id') || '';
-      }
-
-      function setSourceIdInUrl(sourceId) {
-        const nextUrl = new URL(window.location.href);
-        if (sourceId) {
-          nextUrl.searchParams.set('source_id', sourceId);
-        } else {
-          nextUrl.searchParams.delete('source_id');
-        }
-        window.history.replaceState({}, '', nextUrl.toString());
-      }
-
-      async function callApi(action, params) {
-        const response = await fetch(getBackendUrl(), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-          },
-          body: JSON.stringify({
-            action,
-            params: params || {}
-          })
-        });
-
-        const payload = await response.json();
-        if (!payload.ok) {
-          throw new Error(payload.error || 'API request failed.');
-        }
-        return payload.result;
-      }
-
-      function looksLikeUrl(value) {
-        const text = String(value || '').trim();
-        return /^https?:\/\/\S+$/i.test(text);
-      }
-
-      function detectTypeFromInput() {
-        const mainText = elements.captureInput.value.trim();
-        const attachmentRef = elements.attachmentInput.value.trim();
-
-        if (attachmentRef) {
-          return 'document';
-        }
-        if (looksLikeUrl(mainText)) {
-          return 'url';
-        }
-        if (mainText && mainText.length <= 80 && mainText.split('\n').length <= 2) {
-          return 'idea';
-        }
-        if (mainText) {
-          return 'note';
-        }
-        return 'note';
-      }
-
-      function syncDetectedType() {
-        state.detectedType = detectTypeFromInput();
-        if (!state.selectedType) {
-          state.selectedType = state.detectedType;
-        }
-        if (!elements.captureInput.value.trim() && !elements.attachmentInput.value.trim()) {
-          elements.detectHint.textContent = '尚未輸入內容，暫時無法判斷 type。';
-        } else {
-          elements.detectHint.textContent =
-            '系統目前預設判斷為：' + state.detectedType + '。如果你覺得不對，可以直接切換。';
-        }
-        renderTypeSwitches();
-      }
-
-      function renderTypeSwitches() {
-        elements.typeSwitchRow.innerHTML = '';
-        state.bootstrap.sourceTypes.forEach(function(type) {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'tag-button' + (state.selectedType === type ? ' active' : '');
-          button.textContent = type === state.detectedType ? '預設：' + type : '改成 ' + type;
-          button.addEventListener('click', function() {
-            state.selectedType = type;
-            renderTypeSwitches();
-          });
-          elements.typeSwitchRow.appendChild(button);
-        });
-      }
-
-      function renderSession() {
-        const user = getUser();
-        const token = getToken();
-
-        if (!user || !token) {
-          elements.sessionPanel.classList.add('hidden');
-          return;
-        }
-
-        elements.sessionPanel.classList.remove('hidden');
-        elements.sessionSummary.textContent =
-          '目前登入者：' + user.display_name + '（' + user.username + '）';
-      }
-
-      function renderStatusFilter() {
-        elements.listStatusFilter.innerHTML = '';
-
-        const allOption = document.createElement('option');
-        allOption.value = '';
-        allOption.textContent = '全部狀態';
-        elements.listStatusFilter.appendChild(allOption);
-
-        state.bootstrap.statuses.forEach(function(status) {
-          const option = document.createElement('option');
-          option.value = status;
-          option.textContent = status;
-          elements.listStatusFilter.appendChild(option);
-        });
-      }
-
-      function renderStatusSwitches(currentStatus) {
-        elements.statusSwitchRow.innerHTML = '';
-
-        state.bootstrap.statuses.forEach(function(status) {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'tag-button' + (currentStatus === status ? ' active' : '');
-          button.textContent = status;
-          button.disabled = !state.currentSourceId || currentStatus === status;
-          button.addEventListener('click', function() {
-            handleStatusChange(status);
-          });
-          elements.statusSwitchRow.appendChild(button);
-        });
-      }
-
-      function renderSourceList() {
-        elements.sourceList.innerHTML = '';
-
-        if (!state.list.length) {
-          const empty = document.createElement('div');
-          empty.className = 'empty';
-          empty.textContent = '目前沒有符合條件的 source。';
-          elements.sourceList.appendChild(empty);
-          return;
-        }
-
-        state.list.forEach(function(source) {
-          const item = document.createElement('div');
-          item.className = 'source-item';
-          item.innerHTML =
-            '<strong>' + escapeHtml(source.title || '(untitled)') + '</strong>' +
-            '<div class="mini">status: ' + escapeHtml(source.status || '') +
-            ' · type: ' + escapeHtml(source.source_type || '') + '</div>' +
-            '<div class="mini">' + escapeHtml(source.source_ref || '') + '</div>';
-
-          item.addEventListener('click', function() {
-            openSource(source.source_id);
-          });
-          elements.sourceList.appendChild(item);
-        });
-      }
-
-      function renderSourceDetail(detail) {
-        state.currentSource = detail;
-        elements.sourcePanel.classList.remove('hidden');
-        elements.sourceTitle.textContent = detail.source.title || '(untitled)';
-        elements.sourceStatusValue.textContent = detail.source.status || '';
-        elements.sourceTypeValue.textContent = detail.source.source_type || '';
-        elements.sourceRefValue.textContent = detail.source.source_ref || '';
-        elements.sourceCreatedAt.textContent = detail.source.created_at || '';
-        elements.sourceUpdatedAt.textContent = detail.source.updated_at || '';
-        elements.sourceNote.textContent = detail.source.note || '沒有 note';
-        elements.sourceCleanText.textContent = detail.source.clean_text || '沒有 clean text';
-        renderStatusSwitches(detail.source.status || '');
-
-        elements.attachmentList.innerHTML = '';
-        if (!detail.attachments || !detail.attachments.length) {
-          const li = document.createElement('li');
-          li.textContent = '目前沒有掛任何附件';
-          elements.attachmentList.appendChild(li);
-          return;
-        }
-
-        detail.attachments.forEach(function(attachment) {
-          const li = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = attachment.drive_file_url;
-          link.target = '_blank';
-          link.rel = 'noreferrer';
-          link.textContent = attachment.file_name || attachment.drive_file_id;
-          li.appendChild(link);
-          elements.attachmentList.appendChild(li);
-        });
-      }
-
-      function escapeHtml(value) {
-        return String(value || '')
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
-      }
-
-      async function checkBackend() {
-        const url = getBackendUrl();
-        elements.backendUrl.value = url;
-
-        try {
-          const response = await fetch(url);
-          const payload = await response.json();
-          elements.appTitle.textContent = payload.service || 'FALO Source Inbox';
-          elements.backendChip.textContent = 'Backend 已連線';
-          setStatusBox(
-            elements.backendStatus,
-            'ok',
-            'Backend 檢查成功。這代表外部前端已經可以連到 GAS Web App。'
-          );
-          return true;
-        } catch (error) {
-          elements.backendChip.textContent = 'Backend 連線失敗';
-          setStatusBox(
-            elements.backendStatus,
-            'error',
-            '無法連到目前的 Backend URL。請先確認 GAS Web App 已部署，且網址正確。'
-          );
-          return false;
-        }
-      }
-
-      async function loadBootstrap() {
-        try {
-          const bootstrap = await callApi('get_bootstrap', {
-            token: getToken()
-          });
-          state.bootstrap = {
-            appTitle: bootstrap.appTitle || 'FALO Source Inbox',
-            statuses: bootstrap.statuses || state.bootstrap.statuses,
-            sourceTypes: bootstrap.sourceTypes || state.bootstrap.sourceTypes
-          };
-          elements.appTitle.textContent = state.bootstrap.appTitle;
-          renderStatusFilter();
-          syncDetectedType();
-        } catch (error) {
-          renderStatusFilter();
-          syncDetectedType();
-        }
-      }
-
-      async function loadSourceList() {
-        const token = getToken();
-        if (!token) {
-          setStatusBox(elements.listStatus, 'warn', '請先登入，才能載入 source list。');
-          return;
-        }
-
-        setStatusBox(elements.listStatus, '', '正在載入 source list...');
-        try {
-          state.list = await callApi('list_sources', {
-            token,
-            filters: {
-              keyword: elements.listKeyword.value.trim(),
-              status: elements.listStatusFilter.value,
-              source_type: ''
-            }
-          });
-          renderSourceList();
-          setStatusBox(
-            elements.listStatus,
-            'ok',
-            'Source list 已更新，共 ' + state.list.length + ' 筆。'
-          );
-        } catch (error) {
-          setStatusBox(
-            elements.listStatus,
-            'error',
-            '無法載入 source list。請確認目前 session 是否有效。'
-          );
-        }
-      }
-
-      async function openSource(sourceId) {
-        const token = getToken();
-        if (!token) {
-          setStatusBox(elements.sourceStatus, 'warn', '請先登入，才能讀取 source detail。');
-          return;
-        }
-
-        state.currentSourceId = sourceId;
-        setSourceIdInUrl(sourceId);
-        setStatusBox(elements.sourceStatus, '', '正在讀取 source：<code>' + sourceId + '</code>');
-
-        try {
-          const detail = await callApi('get_source_detail', {
-            token,
-            source_id: sourceId
-          });
-          renderSourceDetail(detail);
-          setStatusBox(
-            elements.sourceStatus,
-            'ok',
-            'Source detail 讀取成功。這代表 capture、list、detail 已經串在同一條操作鏈上。'
-          );
-        } catch (error) {
-          setStatusBox(
-            elements.sourceStatus,
-            'error',
-            '無法讀取 source detail。最常見原因是 token 已過期，或 source_id 不存在。'
-          );
-        }
-      }
-
-      async function loadSourceFromQuery() {
-        const sourceId = getSourceIdFromUrl();
-
-        if (!sourceId) {
-          state.currentSourceId = '';
-          setStatusBox(
-            elements.sourceStatus,
-            'warn',
-            '目前網址沒有 `source_id`。你可以先建立 source，或從右側列表點進 detail。'
-          );
-          return;
-        }
-
-        await openSource(sourceId);
-      }
-
-      function buildCapturePayload() {
-        const mainInput = elements.captureInput.value.trim();
-        const noteInput = elements.noteInput.value.trim();
-        const attachmentInput = elements.attachmentInput.value.trim();
-        const selectedType = state.selectedType || state.detectedType || 'note';
-
-        let title = '';
-        let sourceRef = '';
-        let cleanText = '';
-        let note = noteInput;
-
-        if (selectedType === 'url') {
-          title = mainInput || 'Untitled URL';
-          sourceRef = mainInput;
-          cleanText = '';
-        } else {
-          title = (mainInput.split('\n')[0] || '').trim() || (attachmentInput ? 'Attachment capture' : 'Untitled source');
-          sourceRef = attachmentInput || 'manual-input';
-          cleanText = mainInput;
-        }
-
-        if (!note && selectedType === 'url' && mainInput && !looksLikeUrl(mainInput)) {
-          note = mainInput;
-        }
-
-        return {
-          title: title.slice(0, 120),
-          source_type: selectedType,
-          source_ref: sourceRef,
-          note: note,
-          clean_text: cleanText,
-          status: 'inbox'
-        };
-      }
-
-      function clearCaptureForm() {
-        elements.captureInput.value = '';
-        elements.attachmentInput.value = '';
-        elements.noteInput.value = '';
-        state.selectedType = state.bootstrap.sourceTypes.includes('note') ? 'note' : state.bootstrap.sourceTypes[0];
-        syncDetectedType();
-      }
-
-      async function handleCreateSource() {
-        const token = getToken();
-        if (!token) {
-          setStatusBox(elements.captureStatus, 'warn', '請先登入，才能建立 source。');
-          return;
-        }
-
-        const mainInput = elements.captureInput.value.trim();
-        const attachmentInput = elements.attachmentInput.value.trim();
-        if (!mainInput && !attachmentInput) {
-          setStatusBox(elements.captureStatus, 'warn', '至少要有主輸入內容或 Drive 檔案。');
-          return;
-        }
-
-        setStatusBox(elements.captureStatus, '', '正在建立 source...');
-
-        try {
-          const payload = buildCapturePayload();
-          const saveResult = await callApi('save_source', {
-            token,
-            payload
-          });
-
-          if (saveResult.ok === false && saveResult.duplicate) {
-            state.currentSourceId = saveResult.existing.source_id;
-            setSourceIdInUrl(saveResult.existing.source_id);
-            setStatusBox(
-              elements.captureStatus,
-              'warn',
-              '系統判定這筆資料可能重複，已阻擋新增。你可以直接打開既有 source。'
-            );
-            await loadSourceList();
-            await openSource(saveResult.existing.source_id);
-            return;
-          }
-
-          let attachmentMessage = '';
-          if (attachmentInput) {
-            try {
-              await callApi('add_attachment', {
-                token,
-                payload: {
-                  source_id: saveResult.source.source_id,
-                  drive_ref: attachmentInput,
-                  is_primary: true
-                }
-              });
-              attachmentMessage = ' 並已掛上附件。';
-            } catch (attachmentError) {
-              attachmentMessage = ' Source 已建立，但附件掛接失敗，可稍後再補。';
-            }
-          }
-
-          state.currentSourceId = saveResult.source.source_id;
-          setSourceIdInUrl(saveResult.source.source_id);
-          setStatusBox(
-            elements.captureStatus,
-            'ok',
-            'Source 已建立成功。' + attachmentMessage
-          );
-          clearCaptureForm();
-          await loadSourceList();
-          await openSource(saveResult.source.source_id);
-        } catch (error) {
-          setStatusBox(
-            elements.captureStatus,
-            'error',
-            '建立 source 失敗。請先確認登入狀態與輸入內容是否合理。'
-          );
-        }
-      }
-
-      async function handleStatusChange(nextStatus) {
-        const token = getToken();
-        if (!token || !state.currentSourceId) {
-          return;
-        }
-
-        try {
-          await callApi('update_source_status', {
-            token,
-            source_id: state.currentSourceId,
-            next_status: nextStatus,
-            status_note: 'Updated from V2 shell'
-          });
-          await loadSourceList();
-          await openSource(state.currentSourceId);
-        } catch (error) {
-          setStatusBox(
-            elements.sourceStatus,
-            'error',
-            'Status 更新失敗。請稍後再試。'
-          );
-        }
-      }
-
-      async function handleLogin() {
-        setStatusBox(elements.loginStatus, '', '正在登入...');
-
-        try {
-          const result = await callApi('login', {
-            username: elements.username.value.trim(),
-            password: elements.password.value
-          });
-
-          setSession(result.token, result.user);
-          renderSession();
-          await loadBootstrap();
-          await loadSourceList();
-          setStatusBox(
-            elements.loginStatus,
-            'ok',
-            '登入成功。你現在可以直接用 Quick Capture 建立 source。'
-          );
-          await loadSourceFromQuery();
-        } catch (error) {
-          setStatusBox(
-            elements.loginStatus,
-            'error',
-            '登入失敗。請確認帳號密碼與 GAS backend URL 是否正確。'
-          );
-        }
-      }
-
-      async function initializePage() {
-        elements.backendUrl.value = getBackendUrl();
-        renderSession();
-        await checkBackend();
-        await loadBootstrap();
-        if (getToken()) {
-          await loadSourceList();
-        }
-        await loadSourceFromQuery();
-      }
-
-      elements.saveBackendButton.addEventListener('click', function() {
-        setBackendUrl(elements.backendUrl.value.trim());
-        setStatusBox(
-          elements.backendStatus,
-          'ok',
-          'Backend URL 已儲存在這台瀏覽器。接下來可以按「檢查 Backend」。'
-        );
-      });
-
-      elements.checkBackendButton.addEventListener('click', checkBackend);
-      elements.loginButton.addEventListener('click', handleLogin);
-      elements.reloadListButton.addEventListener('click', loadSourceList);
-      elements.reloadSourceButton.addEventListener('click', loadSourceFromQuery);
-      elements.applyFilterButton.addEventListener('click', loadSourceList);
-      elements.createSourceButton.addEventListener('click', handleCreateSource);
-      elements.clearCaptureButton.addEventListener('click', function() {
-        clearCaptureForm();
-        setStatusBox(elements.captureStatus, '', 'Capture 表單已清空。');
-      });
-      elements.captureInput.addEventListener('input', syncDetectedType);
-      elements.attachmentInput.addEventListener('input', syncDetectedType);
-      elements.logoutButton.addEventListener('click', function() {
-        clearSession();
-        renderSession();
-        state.currentSourceId = '';
-        state.currentSource = null;
-        state.list = [];
-        elements.sourceList.innerHTML = '';
-        elements.sourcePanel.classList.add('hidden');
-        setSourceIdInUrl('');
-        setStatusBox(
-          elements.loginStatus,
-          'warn',
-          '本機 session 已清除。若要繼續使用，請重新登入。'
-        );
-        setStatusBox(
-          elements.sourceStatus,
-          'warn',
-          '目前 session 已清除。若要讀取 source detail，請重新登入。'
-        );
-        setStatusBox(
-          elements.listStatus,
-          'warn',
-          '目前未登入，無法載入 source list。'
-        );
-      });
-
-      initializePage();
-    </script>
   </body>
 </html>
