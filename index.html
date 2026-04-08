@@ -1,3 +1,4 @@
+<!-- Last Updated: 2026-04-08 20:44:37 Asia/Taipei -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -16,6 +17,7 @@
         --ok: #2f7a43;
         --warn: #9b5b00;
         --error: #a33a2a;
+        --tag: #f4ead8;
       }
 
       * { box-sizing: border-box; }
@@ -37,7 +39,7 @@
       }
 
       .card {
-        max-width: 980px;
+        max-width: 1100px;
         margin: 0 auto;
         background: rgba(255, 253, 248, 0.97);
         border: 1px solid var(--line);
@@ -62,7 +64,8 @@
       .hero p {
         margin: 0;
         color: var(--soft);
-        line-height: 1.6;
+        line-height: 1.7;
+        max-width: 760px;
       }
 
       .chip {
@@ -104,6 +107,12 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
+      .layout {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+
       .field {
         display: grid;
         gap: 6px;
@@ -114,7 +123,8 @@
       }
 
       .field input,
-      .field textarea {
+      .field textarea,
+      .field select {
         width: 100%;
         border: 1px solid var(--line);
         border-radius: 14px;
@@ -124,7 +134,7 @@
       }
 
       .field textarea {
-        min-height: 120px;
+        min-height: 140px;
         resize: vertical;
       }
 
@@ -187,8 +197,36 @@
         color: var(--error);
       }
 
+      .hint {
+        color: var(--soft);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
       .hidden {
         display: none !important;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag-button {
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--tag);
+        color: var(--soft);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .tag-button.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
       }
 
       .meta-list,
@@ -224,6 +262,59 @@
         background: #f1e6d3;
       }
 
+      .list-wrap {
+        display: grid;
+        gap: 12px;
+      }
+
+      .source-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .source-item {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        background: #fffcf6;
+        cursor: pointer;
+      }
+
+      .source-item:hover {
+        border-color: var(--accent);
+      }
+
+      .source-item strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 18px;
+      }
+
+      .source-item .mini {
+        color: var(--soft);
+        font-size: 14px;
+      }
+
+      .empty {
+        border: 1px dashed var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        color: var(--soft);
+        background: #fffaf2;
+      }
+
+      .toolbar {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1.5fr 1fr auto;
+      }
+
+      @media (max-width: 920px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
       @media (max-width: 720px) {
         .shell {
           padding: 16px;
@@ -241,7 +332,8 @@
           font-size: 30px;
         }
 
-        .grid.two {
+        .grid.two,
+        .toolbar {
           grid-template-columns: 1fr;
         }
       }
@@ -254,8 +346,8 @@
           <div>
             <h1 id="appTitle">FALO Source Inbox</h1>
             <p>
-              這是一個最小可用的外部前端。它的角色不是把所有功能一次做完，而是先完成：
-              <strong>登入</strong>、<strong>讀取 source 詳情</strong>、<strong>承接 email 深連結</strong>。
+              這是 V2 第一版 Shell。目標不是把所有功能一次做完，而是先把高頻場景做順：
+              <strong>快速 Capture、快速切換 type、快速建立、快速回看。</strong>
             </p>
           </div>
           <div class="chip" id="backendChip">Backend 未檢查</div>
@@ -295,7 +387,7 @@
               <button class="primary" id="loginButton" type="button">登入並建立 session</button>
             </div>
             <div class="status-box" id="loginStatus">
-              前端會把 token 存在這台瀏覽器，之後才能讀 `source_id` 對應的 detail。
+              前端會把 token 存在這台瀏覽器，之後才能建立 source、查 source、打開 detail。
             </div>
           </section>
 
@@ -303,13 +395,71 @@
             <h2>3. 目前 session</h2>
             <p class="muted" id="sessionSummary">尚未登入。</p>
             <div class="actions">
-              <button class="secondary" id="reloadSourceButton" type="button">重新載入目前 source</button>
+              <button class="secondary" id="reloadListButton" type="button">重新載入 Source List</button>
+              <button class="ghost" id="reloadSourceButton" type="button">重新載入目前 Source</button>
               <button class="ghost" id="logoutButton" type="button">清除本機 session</button>
             </div>
           </section>
 
+          <div class="layout">
+            <section class="panel">
+              <h2>4. Quick Capture</h2>
+              <div class="field">
+                <label for="captureInput">主輸入</label>
+                <textarea id="captureInput" placeholder="貼網址、打一段 note、貼上一段文字都可以。"></textarea>
+                <div class="hint">
+                  入口先盡量少欄位。這一區只負責先收進來，系統先判斷，之後再補。
+                </div>
+              </div>
+
+              <div class="grid two">
+                <div class="field">
+                  <label for="attachmentInput">Drive 檔案（可選）</label>
+                  <input id="attachmentInput" type="text" placeholder="貼上 Google Drive file URL 或 file ID">
+                </div>
+                <div class="field">
+                  <label for="noteInput">補充說明（可選）</label>
+                  <input id="noteInput" type="text" placeholder="補一句你自己看得懂的說明">
+                </div>
+              </div>
+
+              <div class="grid" style="margin-top: 16px;">
+                <div>
+                  <strong>系統預設判斷</strong>
+                  <div class="hint" id="detectHint">尚未輸入內容，暫時無法判斷 type。</div>
+                </div>
+                <div class="tag-row" id="typeSwitchRow"></div>
+                <div class="hint">
+                  原則不是「少選擇」，而是「有預設，且可快速切換」。
+                </div>
+              </div>
+
+              <div class="actions" style="margin-top: 18px;">
+                <button class="primary" id="createSourceButton" type="button">建立 Source</button>
+                <button class="ghost" id="clearCaptureButton" type="button">清空輸入</button>
+              </div>
+
+              <div class="status-box" id="captureStatus" style="margin-top: 16px;">
+                目標是 3 秒內能建立一筆，而且不需要先思考分類。
+              </div>
+            </section>
+
+            <section class="panel">
+              <h2>5. Source List</h2>
+              <div class="toolbar">
+                <input id="listKeyword" type="text" placeholder="搜尋 title / ref / note / clean text">
+                <select id="listStatusFilter"></select>
+                <button class="secondary" id="applyFilterButton" type="button">查詢</button>
+              </div>
+              <div class="list-wrap" style="margin-top: 16px;">
+                <div class="status-box" id="listStatus">登入後會自動載入 source list。</div>
+                <div class="source-list" id="sourceList"></div>
+              </div>
+            </section>
+          </div>
+
           <section class="panel">
-            <h2>4. Source 深連結狀態</h2>
+            <h2>6. Source 深連結狀態</h2>
             <div class="status-box" id="sourceStatus">
               尚未偵測到 `source_id`。若是從 email 連進來，網址應該長得像：
               <code>?source_id=...</code>
@@ -317,7 +467,7 @@
           </section>
 
           <section class="panel hidden" id="sourcePanel">
-            <h2>5. Source 詳情</h2>
+            <h2>7. Source 詳情</h2>
             <h3 class="source-title" id="sourceTitle">Source Title</h3>
             <ul class="meta-list">
               <li><strong>Status</strong><span id="sourceStatusValue"></span></li>
@@ -328,6 +478,10 @@
             </ul>
 
             <div class="grid" style="margin-top: 18px;">
+              <div>
+                <h3>Status 快速切換</h3>
+                <div class="tag-row" id="statusSwitchRow"></div>
+              </div>
               <div>
                 <h3>Note</h3>
                 <div class="source-text" id="sourceNote"></div>
@@ -355,6 +509,19 @@
         user: 'falo_user'
       };
 
+      const state = {
+        bootstrap: {
+          appTitle: 'FALO Source Inbox',
+          statuses: ['inbox', 'processing', 'done', 'archived'],
+          sourceTypes: ['url', 'note', 'document', 'idea', 'other']
+        },
+        selectedType: 'note',
+        detectedType: 'note',
+        currentSourceId: '',
+        currentSource: null,
+        list: []
+      };
+
       const elements = {
         appTitle: document.getElementById('appTitle'),
         backendChip: document.getElementById('backendChip'),
@@ -369,8 +536,22 @@
         loginStatus: document.getElementById('loginStatus'),
         sessionPanel: document.getElementById('sessionPanel'),
         sessionSummary: document.getElementById('sessionSummary'),
+        reloadListButton: document.getElementById('reloadListButton'),
         reloadSourceButton: document.getElementById('reloadSourceButton'),
         logoutButton: document.getElementById('logoutButton'),
+        captureInput: document.getElementById('captureInput'),
+        attachmentInput: document.getElementById('attachmentInput'),
+        noteInput: document.getElementById('noteInput'),
+        detectHint: document.getElementById('detectHint'),
+        typeSwitchRow: document.getElementById('typeSwitchRow'),
+        createSourceButton: document.getElementById('createSourceButton'),
+        clearCaptureButton: document.getElementById('clearCaptureButton'),
+        captureStatus: document.getElementById('captureStatus'),
+        listKeyword: document.getElementById('listKeyword'),
+        listStatusFilter: document.getElementById('listStatusFilter'),
+        applyFilterButton: document.getElementById('applyFilterButton'),
+        listStatus: document.getElementById('listStatus'),
+        sourceList: document.getElementById('sourceList'),
         sourceStatus: document.getElementById('sourceStatus'),
         sourcePanel: document.getElementById('sourcePanel'),
         sourceTitle: document.getElementById('sourceTitle'),
@@ -381,7 +562,8 @@
         sourceUpdatedAt: document.getElementById('sourceUpdatedAt'),
         sourceNote: document.getElementById('sourceNote'),
         sourceCleanText: document.getElementById('sourceCleanText'),
-        attachmentList: document.getElementById('attachmentList')
+        attachmentList: document.getElementById('attachmentList'),
+        statusSwitchRow: document.getElementById('statusSwitchRow')
       };
 
       function setStatusBox(element, kind, message) {
@@ -423,6 +605,16 @@
         return new URLSearchParams(window.location.search).get('source_id') || '';
       }
 
+      function setSourceIdInUrl(sourceId) {
+        const nextUrl = new URL(window.location.href);
+        if (sourceId) {
+          nextUrl.searchParams.set('source_id', sourceId);
+        } else {
+          nextUrl.searchParams.delete('source_id');
+        }
+        window.history.replaceState({}, '', nextUrl.toString());
+      }
+
       async function callApi(action, params) {
         const response = await fetch(getBackendUrl(), {
           method: 'POST',
@@ -440,6 +632,174 @@
           throw new Error(payload.error || 'API request failed.');
         }
         return payload.result;
+      }
+
+      function looksLikeUrl(value) {
+        const text = String(value || '').trim();
+        return /^https?:\/\/\S+$/i.test(text);
+      }
+
+      function detectTypeFromInput() {
+        const mainText = elements.captureInput.value.trim();
+        const attachmentRef = elements.attachmentInput.value.trim();
+
+        if (attachmentRef) {
+          return 'document';
+        }
+        if (looksLikeUrl(mainText)) {
+          return 'url';
+        }
+        if (mainText && mainText.length <= 80 && mainText.split('\n').length <= 2) {
+          return 'idea';
+        }
+        if (mainText) {
+          return 'note';
+        }
+        return 'note';
+      }
+
+      function syncDetectedType() {
+        state.detectedType = detectTypeFromInput();
+        if (!state.selectedType) {
+          state.selectedType = state.detectedType;
+        }
+        if (!elements.captureInput.value.trim() && !elements.attachmentInput.value.trim()) {
+          elements.detectHint.textContent = '尚未輸入內容，暫時無法判斷 type。';
+        } else {
+          elements.detectHint.textContent =
+            '系統目前預設判斷為：' + state.detectedType + '。如果你覺得不對，可以直接切換。';
+        }
+        renderTypeSwitches();
+      }
+
+      function renderTypeSwitches() {
+        elements.typeSwitchRow.innerHTML = '';
+        state.bootstrap.sourceTypes.forEach(function(type) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'tag-button' + (state.selectedType === type ? ' active' : '');
+          button.textContent = type === state.detectedType ? '預設：' + type : '改成 ' + type;
+          button.addEventListener('click', function() {
+            state.selectedType = type;
+            renderTypeSwitches();
+          });
+          elements.typeSwitchRow.appendChild(button);
+        });
+      }
+
+      function renderSession() {
+        const user = getUser();
+        const token = getToken();
+
+        if (!user || !token) {
+          elements.sessionPanel.classList.add('hidden');
+          return;
+        }
+
+        elements.sessionPanel.classList.remove('hidden');
+        elements.sessionSummary.textContent =
+          '目前登入者：' + user.display_name + '（' + user.username + '）';
+      }
+
+      function renderStatusFilter() {
+        elements.listStatusFilter.innerHTML = '';
+
+        const allOption = document.createElement('option');
+        allOption.value = '';
+        allOption.textContent = '全部狀態';
+        elements.listStatusFilter.appendChild(allOption);
+
+        state.bootstrap.statuses.forEach(function(status) {
+          const option = document.createElement('option');
+          option.value = status;
+          option.textContent = status;
+          elements.listStatusFilter.appendChild(option);
+        });
+      }
+
+      function renderStatusSwitches(currentStatus) {
+        elements.statusSwitchRow.innerHTML = '';
+
+        state.bootstrap.statuses.forEach(function(status) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'tag-button' + (currentStatus === status ? ' active' : '');
+          button.textContent = status;
+          button.disabled = !state.currentSourceId || currentStatus === status;
+          button.addEventListener('click', function() {
+            handleStatusChange(status);
+          });
+          elements.statusSwitchRow.appendChild(button);
+        });
+      }
+
+      function renderSourceList() {
+        elements.sourceList.innerHTML = '';
+
+        if (!state.list.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = '目前沒有符合條件的 source。';
+          elements.sourceList.appendChild(empty);
+          return;
+        }
+
+        state.list.forEach(function(source) {
+          const item = document.createElement('div');
+          item.className = 'source-item';
+          item.innerHTML =
+            '<strong>' + escapeHtml(source.title || '(untitled)') + '</strong>' +
+            '<div class="mini">status: ' + escapeHtml(source.status || '') +
+            ' · type: ' + escapeHtml(source.source_type || '') + '</div>' +
+            '<div class="mini">' + escapeHtml(source.source_ref || '') + '</div>';
+
+          item.addEventListener('click', function() {
+            openSource(source.source_id);
+          });
+          elements.sourceList.appendChild(item);
+        });
+      }
+
+      function renderSourceDetail(detail) {
+        state.currentSource = detail;
+        elements.sourcePanel.classList.remove('hidden');
+        elements.sourceTitle.textContent = detail.source.title || '(untitled)';
+        elements.sourceStatusValue.textContent = detail.source.status || '';
+        elements.sourceTypeValue.textContent = detail.source.source_type || '';
+        elements.sourceRefValue.textContent = detail.source.source_ref || '';
+        elements.sourceCreatedAt.textContent = detail.source.created_at || '';
+        elements.sourceUpdatedAt.textContent = detail.source.updated_at || '';
+        elements.sourceNote.textContent = detail.source.note || '沒有 note';
+        elements.sourceCleanText.textContent = detail.source.clean_text || '沒有 clean text';
+        renderStatusSwitches(detail.source.status || '');
+
+        elements.attachmentList.innerHTML = '';
+        if (!detail.attachments || !detail.attachments.length) {
+          const li = document.createElement('li');
+          li.textContent = '目前沒有掛任何附件';
+          elements.attachmentList.appendChild(li);
+          return;
+        }
+
+        detail.attachments.forEach(function(attachment) {
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = attachment.drive_file_url;
+          link.target = '_blank';
+          link.rel = 'noreferrer';
+          link.textContent = attachment.file_name || attachment.drive_file_id;
+          li.appendChild(link);
+          elements.attachmentList.appendChild(li);
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
       }
 
       async function checkBackend() {
@@ -468,95 +828,239 @@
         }
       }
 
-      function renderSession() {
-        const user = getUser();
-        const token = getToken();
-
-        if (!user || !token) {
-          elements.sessionPanel.classList.add('hidden');
-          return;
+      async function loadBootstrap() {
+        try {
+          const bootstrap = await callApi('get_bootstrap', {
+            token: getToken()
+          });
+          state.bootstrap = {
+            appTitle: bootstrap.appTitle || 'FALO Source Inbox',
+            statuses: bootstrap.statuses || state.bootstrap.statuses,
+            sourceTypes: bootstrap.sourceTypes || state.bootstrap.sourceTypes
+          };
+          elements.appTitle.textContent = state.bootstrap.appTitle;
+          renderStatusFilter();
+          syncDetectedType();
+        } catch (error) {
+          renderStatusFilter();
+          syncDetectedType();
         }
-
-        elements.sessionPanel.classList.remove('hidden');
-        elements.sessionSummary.textContent =
-          '目前登入者：' + user.display_name + '（' + user.username + '）';
       }
 
-      function renderSourceDetail(detail) {
-        elements.sourcePanel.classList.remove('hidden');
-        elements.sourceTitle.textContent = detail.source.title || '(untitled)';
-        elements.sourceStatusValue.textContent = detail.source.status || '';
-        elements.sourceTypeValue.textContent = detail.source.source_type || '';
-        elements.sourceRefValue.textContent = detail.source.source_ref || '';
-        elements.sourceCreatedAt.textContent = detail.source.created_at || '';
-        elements.sourceUpdatedAt.textContent = detail.source.updated_at || '';
-        elements.sourceNote.textContent = detail.source.note || '沒有 note';
-        elements.sourceCleanText.textContent = detail.source.clean_text || '沒有 clean text';
-
-        elements.attachmentList.innerHTML = '';
-        if (!detail.attachments || !detail.attachments.length) {
-          const li = document.createElement('li');
-          li.textContent = '目前沒有掛任何附件';
-          elements.attachmentList.appendChild(li);
-          return;
-        }
-
-        detail.attachments.forEach(function(attachment) {
-          const li = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = attachment.drive_file_url;
-          link.target = '_blank';
-          link.rel = 'noreferrer';
-          link.textContent = attachment.file_name || attachment.drive_file_id;
-          li.appendChild(link);
-          elements.attachmentList.appendChild(li);
-        });
-      }
-
-      async function loadSourceFromQuery() {
-        const sourceId = getSourceIdFromUrl();
+      async function loadSourceList() {
         const token = getToken();
-
-        if (!sourceId) {
-          setStatusBox(
-            elements.sourceStatus,
-            'warn',
-            '目前網址沒有 `source_id`，所以這一頁先不顯示特定 source。你可以先完成登入，或從 email 的深連結進來。'
-          );
-          return;
-        }
-
         if (!token) {
-          setStatusBox(
-            elements.sourceStatus,
-            'warn',
-            '已偵測到 `source_id`，但目前瀏覽器裡還沒有 session token。請先登入，前端才有權限向 GAS 讀取 source detail。'
-          );
+          setStatusBox(elements.listStatus, 'warn', '請先登入，才能載入 source list。');
           return;
         }
 
-        setStatusBox(
-          elements.sourceStatus,
-          '',
-          '正在讀取 source：<code>' + sourceId + '</code>'
-        );
+        setStatusBox(elements.listStatus, '', '正在載入 source list...');
+        try {
+          state.list = await callApi('list_sources', {
+            token,
+            filters: {
+              keyword: elements.listKeyword.value.trim(),
+              status: elements.listStatusFilter.value,
+              source_type: ''
+            }
+          });
+          renderSourceList();
+          setStatusBox(
+            elements.listStatus,
+            'ok',
+            'Source list 已更新，共 ' + state.list.length + ' 筆。'
+          );
+        } catch (error) {
+          setStatusBox(
+            elements.listStatus,
+            'error',
+            '無法載入 source list。請確認目前 session 是否有效。'
+          );
+        }
+      }
+
+      async function openSource(sourceId) {
+        const token = getToken();
+        if (!token) {
+          setStatusBox(elements.sourceStatus, 'warn', '請先登入，才能讀取 source detail。');
+          return;
+        }
+
+        state.currentSourceId = sourceId;
+        setSourceIdInUrl(sourceId);
+        setStatusBox(elements.sourceStatus, '', '正在讀取 source：<code>' + sourceId + '</code>');
 
         try {
           const detail = await callApi('get_source_detail', {
             token,
             source_id: sourceId
           });
+          renderSourceDetail(detail);
           setStatusBox(
             elements.sourceStatus,
             'ok',
-            'Source detail 讀取成功。這代表 email 深連結 -> 外部前端 -> GAS backend 這條線已經打通。'
+            'Source detail 讀取成功。這代表 capture、list、detail 已經串在同一條操作鏈上。'
           );
-          renderSourceDetail(detail);
         } catch (error) {
           setStatusBox(
             elements.sourceStatus,
             'error',
-            '無法讀取 source detail。最常見原因是 token 已過期、尚未登入，或 backend 尚未更新為最新部署。'
+            '無法讀取 source detail。最常見原因是 token 已過期，或 source_id 不存在。'
+          );
+        }
+      }
+
+      async function loadSourceFromQuery() {
+        const sourceId = getSourceIdFromUrl();
+
+        if (!sourceId) {
+          state.currentSourceId = '';
+          setStatusBox(
+            elements.sourceStatus,
+            'warn',
+            '目前網址沒有 `source_id`。你可以先建立 source，或從右側列表點進 detail。'
+          );
+          return;
+        }
+
+        await openSource(sourceId);
+      }
+
+      function buildCapturePayload() {
+        const mainInput = elements.captureInput.value.trim();
+        const noteInput = elements.noteInput.value.trim();
+        const attachmentInput = elements.attachmentInput.value.trim();
+        const selectedType = state.selectedType || state.detectedType || 'note';
+
+        let title = '';
+        let sourceRef = '';
+        let cleanText = '';
+        let note = noteInput;
+
+        if (selectedType === 'url') {
+          title = mainInput || 'Untitled URL';
+          sourceRef = mainInput;
+          cleanText = '';
+        } else {
+          title = (mainInput.split('\n')[0] || '').trim() || (attachmentInput ? 'Attachment capture' : 'Untitled source');
+          sourceRef = attachmentInput || 'manual-input';
+          cleanText = mainInput;
+        }
+
+        if (!note && selectedType === 'url' && mainInput && !looksLikeUrl(mainInput)) {
+          note = mainInput;
+        }
+
+        return {
+          title: title.slice(0, 120),
+          source_type: selectedType,
+          source_ref: sourceRef,
+          note: note,
+          clean_text: cleanText,
+          status: 'inbox'
+        };
+      }
+
+      function clearCaptureForm() {
+        elements.captureInput.value = '';
+        elements.attachmentInput.value = '';
+        elements.noteInput.value = '';
+        state.selectedType = state.bootstrap.sourceTypes.includes('note') ? 'note' : state.bootstrap.sourceTypes[0];
+        syncDetectedType();
+      }
+
+      async function handleCreateSource() {
+        const token = getToken();
+        if (!token) {
+          setStatusBox(elements.captureStatus, 'warn', '請先登入，才能建立 source。');
+          return;
+        }
+
+        const mainInput = elements.captureInput.value.trim();
+        const attachmentInput = elements.attachmentInput.value.trim();
+        if (!mainInput && !attachmentInput) {
+          setStatusBox(elements.captureStatus, 'warn', '至少要有主輸入內容或 Drive 檔案。');
+          return;
+        }
+
+        setStatusBox(elements.captureStatus, '', '正在建立 source...');
+
+        try {
+          const payload = buildCapturePayload();
+          const saveResult = await callApi('save_source', {
+            token,
+            payload
+          });
+
+          if (saveResult.ok === false && saveResult.duplicate) {
+            state.currentSourceId = saveResult.existing.source_id;
+            setSourceIdInUrl(saveResult.existing.source_id);
+            setStatusBox(
+              elements.captureStatus,
+              'warn',
+              '系統判定這筆資料可能重複，已阻擋新增。你可以直接打開既有 source。'
+            );
+            await loadSourceList();
+            await openSource(saveResult.existing.source_id);
+            return;
+          }
+
+          let attachmentMessage = '';
+          if (attachmentInput) {
+            try {
+              await callApi('add_attachment', {
+                token,
+                payload: {
+                  source_id: saveResult.source.source_id,
+                  drive_ref: attachmentInput,
+                  is_primary: true
+                }
+              });
+              attachmentMessage = ' 並已掛上附件。';
+            } catch (attachmentError) {
+              attachmentMessage = ' Source 已建立，但附件掛接失敗，可稍後再補。';
+            }
+          }
+
+          state.currentSourceId = saveResult.source.source_id;
+          setSourceIdInUrl(saveResult.source.source_id);
+          setStatusBox(
+            elements.captureStatus,
+            'ok',
+            'Source 已建立成功。' + attachmentMessage
+          );
+          clearCaptureForm();
+          await loadSourceList();
+          await openSource(saveResult.source.source_id);
+        } catch (error) {
+          setStatusBox(
+            elements.captureStatus,
+            'error',
+            '建立 source 失敗。請先確認登入狀態與輸入內容是否合理。'
+          );
+        }
+      }
+
+      async function handleStatusChange(nextStatus) {
+        const token = getToken();
+        if (!token || !state.currentSourceId) {
+          return;
+        }
+
+        try {
+          await callApi('update_source_status', {
+            token,
+            source_id: state.currentSourceId,
+            next_status: nextStatus,
+            status_note: 'Updated from V2 shell'
+          });
+          await loadSourceList();
+          await openSource(state.currentSourceId);
+        } catch (error) {
+          setStatusBox(
+            elements.sourceStatus,
+            'error',
+            'Status 更新失敗。請稍後再試。'
           );
         }
       }
@@ -572,10 +1076,12 @@
 
           setSession(result.token, result.user);
           renderSession();
+          await loadBootstrap();
+          await loadSourceList();
           setStatusBox(
             elements.loginStatus,
             'ok',
-            '登入成功。token 已儲存在這台瀏覽器，可以開始讀取 source detail。'
+            '登入成功。你現在可以直接用 Quick Capture 建立 source。'
           );
           await loadSourceFromQuery();
         } catch (error) {
@@ -591,6 +1097,10 @@
         elements.backendUrl.value = getBackendUrl();
         renderSession();
         await checkBackend();
+        await loadBootstrap();
+        if (getToken()) {
+          await loadSourceList();
+        }
         await loadSourceFromQuery();
       }
 
@@ -605,20 +1115,39 @@
 
       elements.checkBackendButton.addEventListener('click', checkBackend);
       elements.loginButton.addEventListener('click', handleLogin);
+      elements.reloadListButton.addEventListener('click', loadSourceList);
       elements.reloadSourceButton.addEventListener('click', loadSourceFromQuery);
+      elements.applyFilterButton.addEventListener('click', loadSourceList);
+      elements.createSourceButton.addEventListener('click', handleCreateSource);
+      elements.clearCaptureButton.addEventListener('click', function() {
+        clearCaptureForm();
+        setStatusBox(elements.captureStatus, '', 'Capture 表單已清空。');
+      });
+      elements.captureInput.addEventListener('input', syncDetectedType);
+      elements.attachmentInput.addEventListener('input', syncDetectedType);
       elements.logoutButton.addEventListener('click', function() {
         clearSession();
         renderSession();
+        state.currentSourceId = '';
+        state.currentSource = null;
+        state.list = [];
+        elements.sourceList.innerHTML = '';
         elements.sourcePanel.classList.add('hidden');
+        setSourceIdInUrl('');
         setStatusBox(
           elements.loginStatus,
           'warn',
-          '本機 session 已清除。若要再次讀取 source detail，請重新登入。'
+          '本機 session 已清除。若要繼續使用，請重新登入。'
         );
         setStatusBox(
           elements.sourceStatus,
           'warn',
-          '目前 session 已清除。若網址含有 `source_id`，請重新登入後再載入。'
+          '目前 session 已清除。若要讀取 source detail，請重新登入。'
+        );
+        setStatusBox(
+          elements.listStatus,
+          'warn',
+          '目前未登入，無法載入 source list。'
         );
       });
 
