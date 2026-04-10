@@ -1,4 +1,4 @@
-<!-- Last Updated: 2026-04-08 20:44:37 Asia/Taipei -->
+<!-- Last Updated: 2026-04-08 23:18:40 Asia/Taipei -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -39,7 +39,7 @@
       }
 
       .card {
-        max-width: 1100px;
+        max-width: 1120px;
         margin: 0 auto;
         background: rgba(255, 253, 248, 0.97);
         border: 1px solid var(--line);
@@ -110,7 +110,7 @@
       .layout {
         display: grid;
         gap: 20px;
-        grid-template-columns: 1.1fr 0.9fr;
+        grid-template-columns: 1.15fr 0.85fr;
       }
 
       .field {
@@ -134,8 +134,12 @@
       }
 
       .field textarea {
-        min-height: 140px;
+        min-height: 180px;
         resize: vertical;
+      }
+
+      .field.small input {
+        padding: 11px 13px;
       }
 
       .actions {
@@ -152,6 +156,11 @@
         font: inherit;
         font-weight: 700;
         cursor: pointer;
+      }
+
+      button:disabled {
+        opacity: 0.65;
+        cursor: wait;
       }
 
       .primary {
@@ -205,6 +214,32 @@
 
       .hidden {
         display: none !important;
+      }
+
+      .session-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin: 14px 0 16px;
+      }
+
+      .session-box {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #fcf7ee;
+        padding: 14px 16px;
+      }
+
+      .session-box h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+
+      .session-box ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--soft);
+        line-height: 1.8;
       }
 
       .tag-row {
@@ -295,6 +330,76 @@
         font-size: 14px;
       }
 
+      .attachment-list {
+        display: grid;
+        gap: 12px;
+        padding-left: 0;
+        list-style: none;
+      }
+
+      .attachment-item {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: #fffaf2;
+      }
+
+      .attachment-item a {
+        font-weight: 700;
+      }
+
+      .attachment-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .attachment-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        border: 1px solid var(--line);
+        background: #f7eddc;
+        color: var(--soft);
+      }
+
+      .attachment-chip.primary {
+        background: #f4dfc3;
+        color: var(--accent-dark);
+      }
+
+      .attachment-chip.status-active {
+        background: #eef8f1;
+        border-color: #b9d8c2;
+        color: var(--ok);
+      }
+
+      .attachment-chip.status-superseded,
+      .attachment-chip.status-archived,
+      .attachment-chip.status-removed {
+        background: #fff6e9;
+        border-color: #e4c58e;
+        color: var(--warn);
+      }
+
+      .attachment-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .attachment-note {
+        margin-top: 8px;
+        color: var(--soft);
+        font-size: 14px;
+      }
+
       .empty {
         border: 1px dashed var(--line);
         border-radius: 16px;
@@ -307,6 +412,38 @@
         display: grid;
         gap: 12px;
         grid-template-columns: 1.5fr 1fr auto;
+      }
+
+      .toolbar.four {
+        grid-template-columns: 1.5fr 1fr auto;
+      }
+
+      .inline-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .inline-list input {
+        width: 100%;
+      }
+
+      .pagination {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .pagination-info {
+        color: var(--soft);
+        font-size: 14px;
+      }
+
+      .sort-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
       }
 
       @media (max-width: 920px) {
@@ -376,24 +513,34 @@
             <div class="grid two">
               <div class="field">
                 <label for="username">帳號</label>
-                <input id="username" type="text" value="admin">
+                <input id="username" type="text" placeholder="請輸入帳號">
               </div>
               <div class="field">
                 <label for="password">密碼</label>
-                <input id="password" type="password" value="123">
+                <input id="password" type="password" placeholder="請輸入密碼">
               </div>
             </div>
             <div class="actions" style="margin-top: 16px;">
               <button class="primary" id="loginButton" type="button">登入並建立 session</button>
             </div>
             <div class="status-box" id="loginStatus">
-              前端會把 token 存在這台瀏覽器，之後才能建立 source、查 source、打開 detail。
+              前端只會在這台瀏覽器保存 session token，不會保存密碼。下次開啟時，系統會先驗證這個 session 是否仍然有效。
             </div>
           </section>
 
           <section class="panel hidden" id="sessionPanel">
             <h2>3. 目前 session</h2>
             <p class="muted" id="sessionSummary">尚未登入。</p>
+            <div class="session-grid">
+              <div class="session-box">
+                <h3>Policy</h3>
+                <ul id="sessionPolicyList"></ul>
+              </div>
+              <div class="session-box">
+                <h3>State</h3>
+                <ul id="sessionStateList"></ul>
+              </div>
+            </div>
             <div class="actions">
               <button class="secondary" id="reloadListButton" type="button">重新載入 Source List</button>
               <button class="ghost" id="reloadSourceButton" type="button">重新載入目前 Source</button>
@@ -404,22 +551,47 @@
           <div class="layout">
             <section class="panel">
               <h2>4. Quick Capture</h2>
-              <div class="field">
-                <label for="captureInput">主輸入</label>
-                <textarea id="captureInput" placeholder="貼網址、打一段 note、貼上一段文字都可以。"></textarea>
+              <div class="field small">
+                <label for="primaryInput">主輸入</label>
+                <input id="primaryInput" type="text" placeholder="貼網址、打一個標題、丟一個概念">
                 <div class="hint">
-                  入口先盡量少欄位。這一區只負責先收進來，系統先判斷，之後再補。
+                  主輸入比較像入口訊號：網址、標題、概念。系統會先拿這裡做預設判斷。
                 </div>
               </div>
 
-              <div class="grid two">
-                <div class="field">
-                  <label for="attachmentInput">Drive 檔案（可選）</label>
-                  <input id="attachmentInput" type="text" placeholder="貼上 Google Drive file URL 或 file ID">
+              <div class="field" style="margin-top: 16px;">
+                <label for="contentInput">內容</label>
+                <textarea id="contentInput" placeholder="這裡放比較完整的內容、貼上的段落、整理過的文字。"></textarea>
+                <div class="hint">
+                  這是第二層輸入，也是預設較大的區塊。原則是先收，再補。
                 </div>
-                <div class="field">
-                  <label for="noteInput">補充說明（可選）</label>
-                  <input id="noteInput" type="text" placeholder="補一句你自己看得懂的說明">
+              </div>
+
+              <div class="field small" style="margin-top: 16px;">
+                <label for="noteInput">補充說明（備註）</label>
+                <input id="noteInput" type="text" placeholder="補一句你自己看得懂的說明">
+              </div>
+
+              <div class="field small" style="margin-top: 16px;">
+                <label for="attachmentRefInput">Drive 檔案（可選）</label>
+                <input id="attachmentRefInput" type="text" placeholder="貼上 Google Drive file URL 或 file ID">
+              </div>
+
+              <div class="field small" style="margin-top: 16px;">
+                <label for="fileUploadInput">本機檔案上傳（可選）</label>
+                <input id="fileUploadInput" type="file" multiple>
+                <div class="actions" style="margin-top: 10px;">
+                  <button class="ghost" id="copyFileNameButton" type="button" disabled>複製檔名</button>
+                  <span class="hint" id="fileNameHint">尚未選擇本機檔案。</span>
+                </div>
+                <div class="field" style="margin-top: 10px;">
+                  <label for="fileNameEditInput">檔名（可改）</label>
+                  <div class="inline-list" id="fileNameEditList">
+                    <input id="fileNameEditInput" type="text" placeholder="選檔後會自動帶入，你可以在建立前修改。">
+                  </div>
+                </div>
+                <div class="hint">
+                  這裡改的是顯示檔名。Drive 實際存檔時，系統仍會自動補上最小辨識資訊避免重複。
                 </div>
               </div>
 
@@ -430,7 +602,7 @@
                 </div>
                 <div class="tag-row" id="typeSwitchRow"></div>
                 <div class="hint">
-                  原則不是「少選擇」，而是「有預設，且可快速切換」。
+                  不是少選擇，而是有預設、可快速切換，而且切換時要有明顯回饋。
                 </div>
               </div>
 
@@ -446,14 +618,22 @@
 
             <section class="panel">
               <h2>5. Source List</h2>
-              <div class="toolbar">
+              <div class="toolbar four">
                 <input id="listKeyword" type="text" placeholder="搜尋 title / ref / note / clean text">
                 <select id="listStatusFilter"></select>
                 <button class="secondary" id="applyFilterButton" type="button">查詢</button>
               </div>
+              <div class="sort-row" style="margin-top: 12px;" id="sortButtonRow"></div>
               <div class="list-wrap" style="margin-top: 16px;">
                 <div class="status-box" id="listStatus">登入後會自動載入 source list。</div>
                 <div class="source-list" id="sourceList"></div>
+                <div class="pagination">
+                  <div class="pagination-info" id="paginationInfo">目前尚無資料。</div>
+                  <div class="actions">
+                    <button class="ghost" id="prevPageButton" type="button">上一頁</button>
+                    <button class="ghost" id="nextPageButton" type="button">下一頁</button>
+                  </div>
+                </div>
               </div>
             </section>
           </div>
@@ -493,6 +673,7 @@
               <div>
                 <h3>Attachments</h3>
                 <ul class="attachment-list" id="attachmentList"></ul>
+                <input id="replaceAttachmentFileInput" type="file" class="hidden">
               </div>
             </div>
           </section>
@@ -519,7 +700,18 @@
         detectedType: 'note',
         currentSourceId: '',
         currentSource: null,
-        list: []
+        list: [],
+        currentPage: 1,
+        pageSize: 10,
+        totalItems: 0,
+        totalPages: 1,
+        sortBy: 'updated_desc',
+        session: null,
+        replacingAttachmentId: '',
+        sessionPolicy: {
+          absolute_minutes: 0,
+          renew_minutes: 0
+        }
       };
 
       const elements = {
@@ -536,12 +728,20 @@
         loginStatus: document.getElementById('loginStatus'),
         sessionPanel: document.getElementById('sessionPanel'),
         sessionSummary: document.getElementById('sessionSummary'),
+        sessionPolicyList: document.getElementById('sessionPolicyList'),
+        sessionStateList: document.getElementById('sessionStateList'),
         reloadListButton: document.getElementById('reloadListButton'),
         reloadSourceButton: document.getElementById('reloadSourceButton'),
         logoutButton: document.getElementById('logoutButton'),
-        captureInput: document.getElementById('captureInput'),
-        attachmentInput: document.getElementById('attachmentInput'),
+        primaryInput: document.getElementById('primaryInput'),
+        contentInput: document.getElementById('contentInput'),
         noteInput: document.getElementById('noteInput'),
+        attachmentRefInput: document.getElementById('attachmentRefInput'),
+        fileUploadInput: document.getElementById('fileUploadInput'),
+        copyFileNameButton: document.getElementById('copyFileNameButton'),
+        fileNameHint: document.getElementById('fileNameHint'),
+        fileNameEditInput: document.getElementById('fileNameEditInput'),
+        fileNameEditList: document.getElementById('fileNameEditList'),
         detectHint: document.getElementById('detectHint'),
         typeSwitchRow: document.getElementById('typeSwitchRow'),
         createSourceButton: document.getElementById('createSourceButton'),
@@ -550,8 +750,12 @@
         listKeyword: document.getElementById('listKeyword'),
         listStatusFilter: document.getElementById('listStatusFilter'),
         applyFilterButton: document.getElementById('applyFilterButton'),
+        sortButtonRow: document.getElementById('sortButtonRow'),
         listStatus: document.getElementById('listStatus'),
         sourceList: document.getElementById('sourceList'),
+        paginationInfo: document.getElementById('paginationInfo'),
+        prevPageButton: document.getElementById('prevPageButton'),
+        nextPageButton: document.getElementById('nextPageButton'),
         sourceStatus: document.getElementById('sourceStatus'),
         sourcePanel: document.getElementById('sourcePanel'),
         sourceTitle: document.getElementById('sourceTitle'),
@@ -563,12 +767,18 @@
         sourceNote: document.getElementById('sourceNote'),
         sourceCleanText: document.getElementById('sourceCleanText'),
         attachmentList: document.getElementById('attachmentList'),
+        replaceAttachmentFileInput: document.getElementById('replaceAttachmentFileInput'),
         statusSwitchRow: document.getElementById('statusSwitchRow')
       };
 
       function setStatusBox(element, kind, message) {
         element.className = 'status-box' + (kind ? ' ' + kind : '');
         element.innerHTML = message;
+      }
+
+      function setButtonBusy(button, busy, busyLabel, idleLabel) {
+        button.disabled = busy;
+        button.textContent = busy ? busyLabel : idleLabel;
       }
 
       function getBackendUrl() {
@@ -640,19 +850,21 @@
       }
 
       function detectTypeFromInput() {
-        const mainText = elements.captureInput.value.trim();
-        const attachmentRef = elements.attachmentInput.value.trim();
+        const primary = elements.primaryInput.value.trim();
+        const content = elements.contentInput.value.trim();
+        const hasFile = elements.fileUploadInput.files && elements.fileUploadInput.files.length > 0;
+        const attachmentRef = elements.attachmentRefInput.value.trim();
 
-        if (attachmentRef) {
+        if (hasFile || attachmentRef) {
           return 'document';
         }
-        if (looksLikeUrl(mainText)) {
+        if (looksLikeUrl(primary)) {
           return 'url';
         }
-        if (mainText && mainText.length <= 80 && mainText.split('\n').length <= 2) {
+        if (primary && primary.length <= 80 && !content) {
           return 'idea';
         }
-        if (mainText) {
+        if (primary || content) {
           return 'note';
         }
         return 'note';
@@ -663,7 +875,14 @@
         if (!state.selectedType) {
           state.selectedType = state.detectedType;
         }
-        if (!elements.captureInput.value.trim() && !elements.attachmentInput.value.trim()) {
+
+        const hasAnyInput =
+          elements.primaryInput.value.trim() ||
+          elements.contentInput.value.trim() ||
+          elements.attachmentRefInput.value.trim() ||
+          (elements.fileUploadInput.files && elements.fileUploadInput.files.length > 0);
+
+        if (!hasAnyInput) {
           elements.detectHint.textContent = '尚未輸入內容，暫時無法判斷 type。';
         } else {
           elements.detectHint.textContent =
@@ -678,10 +897,15 @@
           const button = document.createElement('button');
           button.type = 'button';
           button.className = 'tag-button' + (state.selectedType === type ? ' active' : '');
-          button.textContent = type === state.detectedType ? '預設：' + type : '改成 ' + type;
+          button.textContent = type;
           button.addEventListener('click', function() {
             state.selectedType = type;
             renderTypeSwitches();
+            setStatusBox(
+              elements.captureStatus,
+              '',
+              '已切換 type 為 <code>' + type + '</code>。你仍然可以直接建立。'
+            );
           });
           elements.typeSwitchRow.appendChild(button);
         });
@@ -693,17 +917,36 @@
 
         if (!user || !token) {
           elements.sessionPanel.classList.add('hidden');
+          elements.loginPanel.classList.remove('hidden');
           return;
         }
 
+        elements.loginPanel.classList.add('hidden');
         elements.sessionPanel.classList.remove('hidden');
+        const renewMinutes = Number(state.sessionPolicy.renew_minutes || 0);
+        const absoluteMinutes = Number(state.sessionPolicy.absolute_minutes || 0);
+        const renewText = renewMinutes === 0 ? '不限制' : renewMinutes + ' 分鐘';
+        const absoluteText = absoluteMinutes === 0 ? '不限制' : absoluteMinutes + ' 分鐘';
         elements.sessionSummary.textContent =
           '目前登入者：' + user.display_name + '（' + user.username + '）';
+
+        elements.sessionPolicyList.innerHTML = [
+          '<li><strong>Renew</strong>：' + escapeHtml(renewText) + '</li>',
+          '<li><strong>Absolute</strong>：' + escapeHtml(absoluteText) + '</li>'
+        ].join('');
+
+        const sessionState = state.session || {};
+        elements.sessionStateList.innerHTML = [
+          '<li><strong>Status</strong>：' + escapeHtml(sessionState.status || 'unknown') + '</li>',
+          '<li><strong>Device</strong>：' + escapeHtml(sessionState.device_name || 'Browser') + '</li>',
+          '<li><strong>Last Active</strong>：' + escapeHtml(sessionState.last_active_at || '尚無資料') + '</li>',
+          '<li><strong>Renew Expires</strong>：' + escapeHtml(sessionState.renew_expires_at || '不限制') + '</li>',
+          '<li><strong>Absolute Expires</strong>：' + escapeHtml(sessionState.absolute_expires_at || '不限制') + '</li>'
+        ].join('');
       }
 
       function renderStatusFilter() {
         elements.listStatusFilter.innerHTML = '';
-
         const allOption = document.createElement('option');
         allOption.value = '';
         allOption.textContent = '全部狀態';
@@ -717,9 +960,31 @@
         });
       }
 
+      function renderSortButtons() {
+        const sortOptions = [
+          { value: 'updated_desc', label: '最後更新' },
+          { value: 'created_desc', label: '最新建立' },
+          { value: 'title_asc', label: '標題 A-Z' }
+        ];
+
+        elements.sortButtonRow.innerHTML = '';
+        sortOptions.forEach(function(option) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'tag-button' + (state.sortBy === option.value ? ' active' : '');
+          button.textContent = option.label;
+          button.addEventListener('click', function() {
+            state.sortBy = option.value;
+            state.currentPage = 1;
+            renderSortButtons();
+            loadSourceList();
+          });
+          elements.sortButtonRow.appendChild(button);
+        });
+      }
+
       function renderStatusSwitches(currentStatus) {
         elements.statusSwitchRow.innerHTML = '';
-
         state.bootstrap.statuses.forEach(function(status) {
           const button = document.createElement('button');
           button.type = 'button';
@@ -735,12 +1000,14 @@
 
       function renderSourceList() {
         elements.sourceList.innerHTML = '';
-
         if (!state.list.length) {
           const empty = document.createElement('div');
           empty.className = 'empty';
           empty.textContent = '目前沒有符合條件的 source。';
           elements.sourceList.appendChild(empty);
+          elements.paginationInfo.textContent = '目前沒有符合條件的資料。';
+          elements.prevPageButton.disabled = true;
+          elements.nextPageButton.disabled = true;
           return;
         }
 
@@ -757,6 +1024,36 @@
             openSource(source.source_id);
           });
           elements.sourceList.appendChild(item);
+        });
+
+        const pageStart = ((state.currentPage - 1) * state.pageSize) + 1;
+        const pageEnd = Math.min(pageStart + state.list.length - 1, state.totalItems);
+        elements.paginationInfo.textContent =
+          '第 ' + state.currentPage + ' / ' + state.totalPages + ' 頁 · 顯示 ' + pageStart + '-' + pageEnd + ' / ' + state.totalItems + ' 筆';
+        elements.prevPageButton.disabled = state.currentPage <= 1;
+        elements.nextPageButton.disabled = state.currentPage >= state.totalPages;
+      }
+
+      function renderFileNameInputs(files) {
+        elements.fileNameEditList.innerHTML = '';
+
+        if (!files.length) {
+          const input = document.createElement('input');
+          input.id = 'fileNameEditInput';
+          input.type = 'text';
+          input.placeholder = '選檔後會自動帶入，你可以在建立前修改。';
+          elements.fileNameEditList.appendChild(input);
+          elements.fileNameEditInput = input;
+          return;
+        }
+
+        files.forEach(function(file, index) {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.dataset.fileIndex = String(index);
+          input.value = file.name;
+          input.placeholder = '檔名 ' + (index + 1);
+          elements.fileNameEditList.appendChild(input);
         });
       }
 
@@ -776,6 +1073,7 @@
         elements.attachmentList.innerHTML = '';
         if (!detail.attachments || !detail.attachments.length) {
           const li = document.createElement('li');
+          li.className = 'empty';
           li.textContent = '目前沒有掛任何附件';
           elements.attachmentList.appendChild(li);
           return;
@@ -783,14 +1081,128 @@
 
         detail.attachments.forEach(function(attachment) {
           const li = document.createElement('li');
+          li.className = 'attachment-item';
+
           const link = document.createElement('a');
           link.href = attachment.drive_file_url;
           link.target = '_blank';
           link.rel = 'noreferrer';
           link.textContent = attachment.file_name || attachment.drive_file_id;
           li.appendChild(link);
+
+          const metaRow = document.createElement('div');
+          metaRow.className = 'attachment-meta';
+
+          const statusChip = document.createElement('span');
+          statusChip.className = 'attachment-chip status-' + escapeHtml((attachment.status || 'active').toLowerCase());
+          statusChip.textContent = 'status: ' + (attachment.status || 'active');
+          metaRow.appendChild(statusChip);
+
+          if (String(attachment.is_primary).toUpperCase() === 'TRUE') {
+            const primaryChip = document.createElement('span');
+            primaryChip.className = 'attachment-chip primary';
+            primaryChip.textContent = 'primary';
+            metaRow.appendChild(primaryChip);
+          }
+
+          li.appendChild(metaRow);
+
+          const note = document.createElement('div');
+          note.className = 'attachment-note';
+          note.textContent =
+            'stored name: ' + (attachment.stored_name || '(unknown)') +
+            (attachment.replaced_by_attachment_id ? ' · replaced by: ' + attachment.replaced_by_attachment_id : '');
+          li.appendChild(note);
+
+          const actions = document.createElement('div');
+          actions.className = 'attachment-actions';
+
+          if (String(attachment.status || 'active').toLowerCase() === 'active' &&
+              String(attachment.is_primary).toUpperCase() !== 'TRUE') {
+            const primaryButton = document.createElement('button');
+            primaryButton.type = 'button';
+            primaryButton.className = 'ghost';
+            primaryButton.textContent = '設為 primary';
+            primaryButton.addEventListener('click', function() {
+              handleSetAttachmentPrimary(attachment.attachment_id);
+            });
+            actions.appendChild(primaryButton);
+          }
+
+          if (String(attachment.status || 'active').toLowerCase() === 'active') {
+            const replaceButton = document.createElement('button');
+            replaceButton.type = 'button';
+            replaceButton.className = 'ghost';
+            replaceButton.textContent = '替換附件';
+            replaceButton.addEventListener('click', function() {
+              triggerAttachmentReplace(attachment.attachment_id);
+            });
+            actions.appendChild(replaceButton);
+          }
+
+          if (actions.childNodes.length) {
+            li.appendChild(actions);
+          }
+
           elements.attachmentList.appendChild(li);
         });
+      }
+
+      async function handleSetAttachmentPrimary(attachmentId) {
+        const token = getToken();
+        if (!token || !state.currentSourceId) {
+          return;
+        }
+
+        setStatusBox(elements.sourceStatus, '', '處理中：正在調整 primary attachment...');
+        try {
+          await callApi('set_attachment_primary', {
+            token: token,
+            attachment_id: attachmentId
+          });
+          await openSource(state.currentSourceId);
+          setStatusBox(elements.sourceStatus, 'ok', '處理完畢：primary attachment 已更新。');
+        } catch (error) {
+          setStatusBox(elements.sourceStatus, 'error', '設為 primary 失敗。請稍後再試。');
+        }
+      }
+
+      function triggerAttachmentReplace(attachmentId) {
+        state.replacingAttachmentId = attachmentId;
+        elements.replaceAttachmentFileInput.value = '';
+        elements.replaceAttachmentFileInput.click();
+      }
+
+      async function handleReplaceAttachmentSelection() {
+        const token = getToken();
+        const files = Array.from(elements.replaceAttachmentFileInput.files || []);
+
+        if (!token || !state.currentSourceId || !state.replacingAttachmentId || !files.length) {
+          return;
+        }
+
+        const file = files[0];
+        setStatusBox(elements.sourceStatus, '', '處理中：正在替換附件...');
+
+        try {
+          await callApi('replace_attachment', {
+            token: token,
+            payload: {
+              attachment_id: state.replacingAttachmentId,
+              file_name: file.name,
+              original_file_name: file.name,
+              mime_type: file.type || 'application/octet-stream',
+              data_base64: await fileToBase64(file)
+            }
+          });
+          await openSource(state.currentSourceId);
+          setStatusBox(elements.sourceStatus, 'ok', '處理完畢：附件已替換，舊附件已進入 superseded 狀態。');
+        } catch (error) {
+          setStatusBox(elements.sourceStatus, 'error', '替換附件失敗。請稍後再試。');
+        } finally {
+          state.replacingAttachmentId = '';
+          elements.replaceAttachmentFileInput.value = '';
+        }
       }
 
       function escapeHtml(value) {
@@ -800,6 +1212,77 @@
           .replace(/>/g, '&gt;')
           .replace(/"/g, '&quot;')
           .replace(/'/g, '&#39;');
+      }
+
+      function fileToBase64(file) {
+        return new Promise(function(resolve, reject) {
+          const reader = new FileReader();
+          reader.onload = function() {
+            const result = String(reader.result || '');
+            const base64 = result.split(',')[1] || '';
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function updateFileUploadUi() {
+        const files = Array.from(elements.fileUploadInput.files || []);
+        elements.copyFileNameButton.disabled = !files.length;
+        renderFileNameInputs(files);
+
+        if (!files.length) {
+          elements.fileNameHint.textContent = '尚未選擇本機檔案。';
+          return;
+        }
+
+        if (files.length === 1) {
+          elements.fileNameHint.textContent = '目前選到：' + files[0].name;
+        } else {
+          elements.fileNameHint.textContent =
+            '目前選到 ' + files.length + ' 個檔案：' +
+            files.slice(0, 3).map(function(file) {
+              return file.name;
+            }).join('、') +
+            (files.length > 3 ? ' ...' : '');
+        }
+      }
+
+      async function copySelectedFileName() {
+        const files = Array.from(elements.fileUploadInput.files || []);
+        if (!files.length) {
+          setStatusBox(elements.captureStatus, 'warn', '目前沒有可複製的檔名，請先選至少一個本機檔案。');
+          return;
+        }
+
+        const joinedNames = files.map(function(file) {
+          return file.name;
+        }).join('\n');
+
+        try {
+          if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            await navigator.clipboard.writeText(joinedNames);
+          } else {
+            const helperInput = document.createElement('input');
+            helperInput.value = joinedNames;
+            document.body.appendChild(helperInput);
+            helperInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(helperInput);
+          }
+          setStatusBox(
+            elements.captureStatus,
+            'ok',
+            '處理完畢：已複製 ' + files.length + ' 個檔名，你可以貼到主輸入或備註。'
+          );
+        } catch (error) {
+          setStatusBox(
+            elements.captureStatus,
+            'error',
+            '無法直接複製檔名。請確認瀏覽器允許剪貼簿操作，或手動複製。'
+          );
+        }
       }
 
       async function checkBackend() {
@@ -829,8 +1312,9 @@
       }
 
       async function loadBootstrap() {
+        let bootstrap = null;
         try {
-          const bootstrap = await callApi('get_bootstrap', {
+          bootstrap = await callApi('get_bootstrap', {
             token: getToken()
           });
           state.bootstrap = {
@@ -838,13 +1322,17 @@
             statuses: bootstrap.statuses || state.bootstrap.statuses,
             sourceTypes: bootstrap.sourceTypes || state.bootstrap.sourceTypes
           };
+          state.sessionPolicy = bootstrap.sessionPolicy || state.sessionPolicy;
+          state.session = bootstrap.session || null;
           elements.appTitle.textContent = state.bootstrap.appTitle;
-          renderStatusFilter();
-          syncDetectedType();
         } catch (error) {
-          renderStatusFilter();
-          syncDetectedType();
+          // Keep local defaults.
         }
+
+        renderStatusFilter();
+        renderSortButtons();
+        syncDetectedType();
+        return bootstrap;
       }
 
       async function loadSourceList() {
@@ -854,28 +1342,28 @@
           return;
         }
 
-        setStatusBox(elements.listStatus, '', '正在載入 source list...');
+        setStatusBox(elements.listStatus, '', '處理中：正在載入 source list...');
         try {
-          state.list = await callApi('list_sources', {
+          const result = await callApi('list_sources', {
             token,
             filters: {
               keyword: elements.listKeyword.value.trim(),
               status: elements.listStatusFilter.value,
-              source_type: ''
+              source_type: '',
+              page: state.currentPage,
+              page_size: state.pageSize,
+              sort_by: state.sortBy
             }
           });
+          state.list = result.items || [];
+          state.totalItems = result.total || 0;
+          state.currentPage = result.page || 1;
+          state.pageSize = result.page_size || 10;
+          state.totalPages = result.total_pages || 1;
           renderSourceList();
-          setStatusBox(
-            elements.listStatus,
-            'ok',
-            'Source list 已更新，共 ' + state.list.length + ' 筆。'
-          );
+          setStatusBox(elements.listStatus, 'ok', '處理完畢：已載入目前頁的 ' + state.list.length + ' 筆 source。');
         } catch (error) {
-          setStatusBox(
-            elements.listStatus,
-            'error',
-            '無法載入 source list。請確認目前 session 是否有效。'
-          );
+          setStatusBox(elements.listStatus, 'error', '無法載入 source list。請確認目前 session 是否有效。');
         }
       }
 
@@ -888,7 +1376,7 @@
 
         state.currentSourceId = sourceId;
         setSourceIdInUrl(sourceId);
-        setStatusBox(elements.sourceStatus, '', '正在讀取 source：<code>' + sourceId + '</code>');
+        setStatusBox(elements.sourceStatus, '', '處理中：正在讀取 source <code>' + sourceId + '</code>');
 
         try {
           const detail = await callApi('get_source_detail', {
@@ -896,23 +1384,14 @@
             source_id: sourceId
           });
           renderSourceDetail(detail);
-          setStatusBox(
-            elements.sourceStatus,
-            'ok',
-            'Source detail 讀取成功。這代表 capture、list、detail 已經串在同一條操作鏈上。'
-          );
+          setStatusBox(elements.sourceStatus, 'ok', '處理完畢：Source detail 已載入。');
         } catch (error) {
-          setStatusBox(
-            elements.sourceStatus,
-            'error',
-            '無法讀取 source detail。最常見原因是 token 已過期，或 source_id 不存在。'
-          );
+          setStatusBox(elements.sourceStatus, 'error', '無法讀取 source detail。最常見原因是 token 已過期，或 source_id 不存在。');
         }
       }
 
       async function loadSourceFromQuery() {
         const sourceId = getSourceIdFromUrl();
-
         if (!sourceId) {
           state.currentSourceId = '';
           setStatusBox(
@@ -927,28 +1406,21 @@
       }
 
       function buildCapturePayload() {
-        const mainInput = elements.captureInput.value.trim();
-        const noteInput = elements.noteInput.value.trim();
-        const attachmentInput = elements.attachmentInput.value.trim();
+        const primary = elements.primaryInput.value.trim();
+        const content = elements.contentInput.value.trim();
+        const note = elements.noteInput.value.trim();
         const selectedType = state.selectedType || state.detectedType || 'note';
+        const driveRef = elements.attachmentRefInput.value.trim();
 
-        let title = '';
-        let sourceRef = '';
-        let cleanText = '';
-        let note = noteInput;
+        let title = primary || (content.split('\n')[0] || '').trim() || 'Untitled source';
+        let sourceRef = driveRef || primary || 'manual-input';
+        let cleanText = content;
 
-        if (selectedType === 'url') {
-          title = mainInput || 'Untitled URL';
-          sourceRef = mainInput;
-          cleanText = '';
-        } else {
-          title = (mainInput.split('\n')[0] || '').trim() || (attachmentInput ? 'Attachment capture' : 'Untitled source');
-          sourceRef = attachmentInput || 'manual-input';
-          cleanText = mainInput;
-        }
-
-        if (!note && selectedType === 'url' && mainInput && !looksLikeUrl(mainInput)) {
-          note = mainInput;
+        if (selectedType === 'url' && primary) {
+          sourceRef = primary;
+          if (!content && note) {
+            cleanText = note;
+          }
         }
 
         return {
@@ -962,11 +1434,60 @@
       }
 
       function clearCaptureForm() {
-        elements.captureInput.value = '';
-        elements.attachmentInput.value = '';
+        elements.primaryInput.value = '';
+        elements.contentInput.value = '';
         elements.noteInput.value = '';
-        state.selectedType = state.bootstrap.sourceTypes.includes('note') ? 'note' : state.bootstrap.sourceTypes[0];
+        elements.attachmentRefInput.value = '';
+        elements.fileUploadInput.value = '';
+        state.selectedType = 'note';
+        updateFileUploadUi();
         syncDetectedType();
+      }
+
+      function getRequestedFileNames(files) {
+        return files.map(function(file, index) {
+          const nextInput = elements.fileNameEditList.querySelector('[data-file-index="' + index + '"]');
+          const nextName = nextInput ? nextInput.value.trim() : '';
+          return nextName || file.name;
+        });
+      }
+
+      async function attachLocalFile(token, sourceId, file, isPrimary) {
+        const dataBase64 = await fileToBase64(file);
+        return callApi('upload_attachment_file', {
+          token,
+          payload: {
+            source_id: sourceId,
+            file_name: file.name,
+            mime_type: file.type || 'application/octet-stream',
+            data_base64: dataBase64,
+            is_primary: isPrimary
+          }
+        });
+      }
+
+      async function attachLocalFiles(token, sourceId, files) {
+        const requestedNames = getRequestedFileNames(files);
+        const payloadFiles = [];
+
+        for (let index = 0; index < files.length; index += 1) {
+          const file = files[index];
+          payloadFiles.push({
+            file_name: requestedNames[index],
+            original_file_name: file.name,
+            mime_type: file.type || 'application/octet-stream',
+            data_base64: await fileToBase64(file)
+          });
+        }
+
+        return callApi('upload_attachment_files', {
+          token,
+          payload: {
+            source_id: sourceId,
+            first_is_primary: true,
+            files: payloadFiles
+          }
+        });
       }
 
       async function handleCreateSource() {
@@ -976,14 +1497,18 @@
           return;
         }
 
-        const mainInput = elements.captureInput.value.trim();
-        const attachmentInput = elements.attachmentInput.value.trim();
-        if (!mainInput && !attachmentInput) {
-          setStatusBox(elements.captureStatus, 'warn', '至少要有主輸入內容或 Drive 檔案。');
+        const primary = elements.primaryInput.value.trim();
+        const content = elements.contentInput.value.trim();
+        const driveRef = elements.attachmentRefInput.value.trim();
+        const files = Array.from(elements.fileUploadInput.files || []);
+
+        if (!primary && !content && !driveRef && !files.length) {
+          setStatusBox(elements.captureStatus, 'warn', '至少要有主輸入、內容、Drive 連結或本機檔案其中一項。');
           return;
         }
 
-        setStatusBox(elements.captureStatus, '', '正在建立 source...');
+        setButtonBusy(elements.createSourceButton, true, '建立中...', '建立 Source');
+        setStatusBox(elements.captureStatus, '', '處理中：正在建立 source...');
 
         try {
           const payload = buildCapturePayload();
@@ -998,46 +1523,57 @@
             setStatusBox(
               elements.captureStatus,
               'warn',
-              '系統判定這筆資料可能重複，已阻擋新增。你可以直接打開既有 source。'
+              '處理完畢：系統判定這筆資料可能重複，已阻擋新增，並切到既有 source。'
             );
             await loadSourceList();
             await openSource(saveResult.existing.source_id);
             return;
           }
 
-          let attachmentMessage = '';
-          if (attachmentInput) {
-            try {
-              await callApi('add_attachment', {
-                token,
-                payload: {
-                  source_id: saveResult.source.source_id,
-                  drive_ref: attachmentInput,
-                  is_primary: true
-                }
-              });
-              attachmentMessage = ' 並已掛上附件。';
-            } catch (attachmentError) {
-              attachmentMessage = ' Source 已建立，但附件掛接失敗，可稍後再補。';
-            }
+          let attachmentNotes = [];
+          if (files.length) {
+            setStatusBox(
+              elements.captureStatus,
+              '',
+              '處理中：Source 已建立，正在上傳 ' + files.length + ' 個本機檔案...'
+            );
+            await attachLocalFiles(token, saveResult.source.source_id, files);
+            attachmentNotes.push(files.length + ' 個本機檔案已上傳');
+          }
+
+          if (driveRef) {
+            setStatusBox(elements.captureStatus, '', '處理中：正在掛接 Drive 檔案...');
+            await callApi('add_attachment', {
+              token,
+              payload: {
+                source_id: saveResult.source.source_id,
+                drive_ref: driveRef,
+                is_primary: !files.length
+              }
+            });
+            attachmentNotes.push('Drive 檔案已掛接');
           }
 
           state.currentSourceId = saveResult.source.source_id;
           setSourceIdInUrl(saveResult.source.source_id);
-          setStatusBox(
-            elements.captureStatus,
-            'ok',
-            'Source 已建立成功。' + attachmentMessage
-          );
           clearCaptureForm();
           await loadSourceList();
           await openSource(saveResult.source.source_id);
+
+          setStatusBox(
+            elements.captureStatus,
+            'ok',
+            '處理完畢：Source 已建立成功。' +
+              (attachmentNotes.length ? ' ' + attachmentNotes.join('，') + '。' : '')
+          );
         } catch (error) {
           setStatusBox(
             elements.captureStatus,
             'error',
-            '建立 source 失敗。請先確認登入狀態與輸入內容是否合理。'
+            '建立 source 失敗。請先確認登入狀態、輸入內容，或檔案大小是否合理。'
           );
+        } finally {
+          setButtonBusy(elements.createSourceButton, false, '建立中...', '建立 Source');
         }
       }
 
@@ -1047,6 +1583,7 @@
           return;
         }
 
+        setStatusBox(elements.sourceStatus, '', '處理中：正在更新 status 為 <code>' + nextStatus + '</code>...');
         try {
           await callApi('update_source_status', {
             token,
@@ -1057,100 +1594,151 @@
           await loadSourceList();
           await openSource(state.currentSourceId);
         } catch (error) {
-          setStatusBox(
-            elements.sourceStatus,
-            'error',
-            'Status 更新失敗。請稍後再試。'
-          );
+          setStatusBox(elements.sourceStatus, 'error', 'Status 更新失敗。請稍後再試。');
         }
       }
 
       async function handleLogin() {
-        setStatusBox(elements.loginStatus, '', '正在登入...');
+        setButtonBusy(elements.loginButton, true, '登入中...', '登入並建立 session');
+        setStatusBox(elements.loginStatus, '', '處理中：正在登入...');
 
         try {
           const result = await callApi('login', {
             username: elements.username.value.trim(),
-            password: elements.password.value
+            password: elements.password.value,
+            device_name: buildDeviceName()
           });
 
           setSession(result.token, result.user);
+          state.session = result.session || null;
+          state.sessionPolicy = {
+            absolute_minutes: Number((result.session && result.session.absolute_minutes) || 0),
+            renew_minutes: Number((result.session && result.session.renew_minutes) || 0)
+          };
+          elements.password.value = '';
           renderSession();
           await loadBootstrap();
           await loadSourceList();
-          setStatusBox(
-            elements.loginStatus,
-            'ok',
-            '登入成功。你現在可以直接用 Quick Capture 建立 source。'
-          );
+          setStatusBox(elements.loginStatus, 'ok', '處理完畢：登入成功，現在可以直接用 Quick Capture 建立 source。');
           await loadSourceFromQuery();
         } catch (error) {
-          setStatusBox(
-            elements.loginStatus,
-            'error',
-            '登入失敗。請確認帳號密碼與 GAS backend URL 是否正確。'
-          );
+          setStatusBox(elements.loginStatus, 'error', '登入失敗。請確認帳號密碼與 GAS backend URL 是否正確。');
+        } finally {
+          setButtonBusy(elements.loginButton, false, '登入中...', '登入並建立 session');
         }
       }
 
       async function initializePage() {
         elements.backendUrl.value = getBackendUrl();
-        renderSession();
         await checkBackend();
-        await loadBootstrap();
-        if (getToken()) {
+        const bootstrap = await loadBootstrap();
+        if (bootstrap && bootstrap.sessionExpired) {
+          clearSession();
+          state.session = null;
+          renderSession();
+          setStatusBox(elements.loginStatus, 'warn', '原本保存在這台瀏覽器的 session 已失效，請重新登入。');
+        } else if (bootstrap && bootstrap.user && getToken()) {
+          setSession(getToken(), bootstrap.user);
+          state.session = bootstrap.session || null;
+          renderSession();
           await loadSourceList();
+        } else {
+          state.session = null;
+          renderSession();
         }
         await loadSourceFromQuery();
       }
 
+      function buildDeviceName() {
+        const userAgent = navigator.userAgent || '';
+        if (/iPhone|iPad|iPod/i.test(userAgent)) {
+          return 'iOS Browser';
+        }
+        if (/Android/i.test(userAgent)) {
+          return 'Android Browser';
+        }
+        if (/Macintosh/i.test(userAgent)) {
+          return 'Mac Browser';
+        }
+        if (/Windows/i.test(userAgent)) {
+          return 'Windows Browser';
+        }
+        return 'Browser';
+      }
+
       elements.saveBackendButton.addEventListener('click', function() {
         setBackendUrl(elements.backendUrl.value.trim());
-        setStatusBox(
-          elements.backendStatus,
-          'ok',
-          'Backend URL 已儲存在這台瀏覽器。接下來可以按「檢查 Backend」。'
-        );
+        setStatusBox(elements.backendStatus, 'ok', 'Backend URL 已儲存在這台瀏覽器。接下來可以按「檢查 Backend」。');
       });
 
       elements.checkBackendButton.addEventListener('click', checkBackend);
       elements.loginButton.addEventListener('click', handleLogin);
       elements.reloadListButton.addEventListener('click', loadSourceList);
       elements.reloadSourceButton.addEventListener('click', loadSourceFromQuery);
-      elements.applyFilterButton.addEventListener('click', loadSourceList);
+      elements.applyFilterButton.addEventListener('click', function() {
+        state.currentPage = 1;
+        loadSourceList();
+      });
+      elements.prevPageButton.addEventListener('click', function() {
+        if (state.currentPage > 1) {
+          state.currentPage -= 1;
+          loadSourceList();
+        }
+      });
+      elements.nextPageButton.addEventListener('click', function() {
+        if (state.currentPage < state.totalPages) {
+          state.currentPage += 1;
+          loadSourceList();
+        }
+      });
+      elements.listKeyword.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          state.currentPage = 1;
+          loadSourceList();
+        }
+      });
       elements.createSourceButton.addEventListener('click', handleCreateSource);
       elements.clearCaptureButton.addEventListener('click', function() {
         clearCaptureForm();
         setStatusBox(elements.captureStatus, '', 'Capture 表單已清空。');
       });
-      elements.captureInput.addEventListener('input', syncDetectedType);
-      elements.attachmentInput.addEventListener('input', syncDetectedType);
-      elements.logoutButton.addEventListener('click', function() {
+      elements.primaryInput.addEventListener('input', syncDetectedType);
+      elements.contentInput.addEventListener('input', syncDetectedType);
+      elements.attachmentRefInput.addEventListener('input', syncDetectedType);
+      elements.fileUploadInput.addEventListener('change', function() {
+        updateFileUploadUi();
+        syncDetectedType();
+      });
+      elements.replaceAttachmentFileInput.addEventListener('change', handleReplaceAttachmentSelection);
+      elements.copyFileNameButton.addEventListener('click', copySelectedFileName);
+      elements.logoutButton.addEventListener('click', async function() {
+        const token = getToken();
+        if (token) {
+          try {
+            await callApi('logout', {
+              token: token
+            });
+          } catch (error) {
+            // Keep local logout path even if backend revoke fails.
+          }
+        }
+
         clearSession();
         renderSession();
         state.currentSourceId = '';
         state.currentSource = null;
+        state.session = null;
         state.list = [];
         elements.sourceList.innerHTML = '';
         elements.sourcePanel.classList.add('hidden');
+        elements.password.value = '';
         setSourceIdInUrl('');
-        setStatusBox(
-          elements.loginStatus,
-          'warn',
-          '本機 session 已清除。若要繼續使用，請重新登入。'
-        );
-        setStatusBox(
-          elements.sourceStatus,
-          'warn',
-          '目前 session 已清除。若要讀取 source detail，請重新登入。'
-        );
-        setStatusBox(
-          elements.listStatus,
-          'warn',
-          '目前未登入，無法載入 source list。'
-        );
+        setStatusBox(elements.loginStatus, 'warn', '本機 session 已清除。若要繼續使用，請重新登入。');
+        setStatusBox(elements.sourceStatus, 'warn', '目前 session 已清除。若要讀取 source detail，請重新登入。');
+        setStatusBox(elements.listStatus, 'warn', '目前未登入，無法載入 source list。');
       });
 
+      updateFileUploadUi();
       initializePage();
     </script>
   </body>
